@@ -1,0 +1,76 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    testngVersion = '7.4.0'
+    junitVersion = '4.13.2'
+    awsSdkVersion = '1.12.150'
+}
+
+dependencies {
+    // Module dependencies
+    implementation project(':common')
+    implementation project(':api')
+    implementation project(':data')
+    implementation project(':service')
+    implementation project(':aws-integration')
+    implementation project(':web')
+    implementation project(':batch')
+    
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // AWS SDK
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // Test dependencies - moved to implementation to make them available at compile time
+    // This is needed because the test classes are in the main source set rather than test source set
+    implementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.security:spring-security-test'
+    implementation "org.testng:testng:${testngVersion}"
+    implementation "junit:junit:${junitVersion}"
+    implementation 'org.mockito:mockito-core'
+    implementation 'org.assertj:assertj-core'
+    
+    // Database
+    implementation 'com.h2database:h2'
+    
+    // Other utilities
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+// Create a dummy file for the jar
+task createDummyFile {
+    def dummyFile = file("${buildDir}/dummy/integration-tests-placeholder.txt")
+    outputs.file dummyFile
+    doLast {
+        dummyFile.parentFile.mkdirs()
+        dummyFile.text = "This is a placeholder file for the integration-tests module jar."
+    }
+}
+
+jar {
+    dependsOn createDummyFile
+    from("${buildDir}/dummy")
+    enabled = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+bootJar {
+    enabled = false
+}

@@ -1,0 +1,93 @@
+# AWS Test Configuration Properties
+# Project: gradle80
+# Module: aws-integration
+
+# AWS Credentials
+aws:
+  credentials:
+    access-key: test-access-key
+    secret-key: test-secret-key
+    # Use basic credential provider for tests
+    provider-type: basic
+  region: us-east-1
+  
+  # Endpoint Configuration
+  # Using localstack for tests
+  endpoints:
+    # Test environments should use localstack endpoints
+    sns: http://localhost:4566
+    sqs: http://localhost:4566
+  
+  # SNS Configuration
+  sns:
+    topics:
+      notification-topic: test-notification-topic
+      alert-topic: test-alert-topic
+      data-topic: test-data-topic
+    # Test message attributes
+    default-attributes:
+      environment: test
+      version: 1.0
+    # Message handling
+    message-timeout-seconds: 30
+  
+  # SQS Configuration
+  sqs:
+    queues:
+      # Main test queues
+      notification-queue: test-notification-queue
+      data-queue: test-data-queue
+      # Dead letter queues for testing retry mechanism
+      notification-dlq: test-notification-dlq
+      data-dlq: test-data-dlq
+    # Queue properties for tests
+    default-attributes:
+      MessageRetentionPeriod: 60
+      VisibilityTimeout: 5
+    # Polling configuration
+    polling:
+      interval-ms: 100
+      max-messages: 10
+      wait-time-seconds: 1
+    # Processing settings
+    processing:
+      max-retries: 3
+      backoff-period-ms: 500
+  
+  # Health check configuration
+  health:
+    enabled: true
+    check-interval-seconds: 30
+    failure-threshold: 3
+
+# Test-specific settings
+test:
+  # Enable/disable specific test components
+  features:
+    use-sns: true
+    use-sqs: true
+  
+  # Test data for integration tests
+  sample-data:
+    message-count: 10
+    payload-size-bytes: 1024
+  
+  # Integration test timeouts
+  timeouts:
+    sns-publishing-ms: 5000
+    sqs-receiving-ms: 10000
+
+# Logging configuration for tests
+logging:
+  level:
+    com.gradle80.aws: DEBUG
+    com.amazonaws: INFO
+    # Reduce noise from AWS SDK in tests
+    com.amazonaws.request: WARN
+
+# Spring configuration
+spring:
+  application:
+    name: aws-integration-test
+  main:
+    banner-mode: off

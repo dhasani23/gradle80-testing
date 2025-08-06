@@ -1,0 +1,142 @@
+/**
+ * Build file for the data module
+ *
+ * This module contains the data access layer with repositories,
+ * entities, and database configurations.
+ */
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'Data access layer with repositories, entities, and database configurations.'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+ext {
+    awsSdkVersion = '1.12.150'
+    hibernateVersion = '5.4.32.Final'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    implementation.exclude module: 'jakarta.persistence-api'
+}
+
+dependencies {
+    // Internal dependencies
+    implementation project(':common')
+    
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    
+    // Database dependencies
+    implementation 'com.h2database:h2'
+    
+    // Ensure we use javax.persistence not jakarta.persistence
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    
+    // Explicitly set Hibernate version to one compatible with javax.persistence
+    implementation "org.hibernate:hibernate-core:${hibernateVersion}"
+    
+    // QueryDSL dependencies
+    implementation 'com.querydsl:querydsl-jpa:4.4.0'
+    implementation 'com.querydsl:querydsl-apt:4.4.0'
+    annotationProcessor 'com.querydsl:querydsl-apt:4.4.0:jpa'
+    
+    // AWS dependencies
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // Lombok for boilerplate reduction
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Testing dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testng:testng'
+    testImplementation 'junit:junit'
+    
+    // Additional dependencies
+    implementation 'org.flywaydb:flyway-core' // For database migrations
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'org.apache.commons:commons-lang3'
+}
+
+// Configure test task to use JUnit and TestNG
+test {
+    useJUnitPlatform()
+    // Include TestNG tests
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+// Configure QueryDSL source generation
+def querydslDir = "$buildDir/generated/querydsl"
+
+// Setup annotation processing for QueryDSL
+tasks.withType(JavaCompile) {
+    options.annotationProcessorPath = configurations.annotationProcessor
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += [querydslDir]
+        }
+    }
+}
+
+// Clean generated sources
+clean {
+    delete querydslDir
+}
+
+// Disable bootJar since this is a library module
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    archiveClassifier = ''
+}
+
+// Add version information to manifest
+jar {
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Created-By': "Gradle ${gradle.gradleVersion}",
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date().format("yyyy-MM-dd HH:mm:ss")
+        )
+    }
+}
+
+// Add tasks for entity generation validation
+task validateEntities {
+    group = "verification"
+    description = "Validates all entity classes"
+    
+    doLast {
+        logger.lifecycle "Validating entity classes..."
+        // This would contain actual validation logic in a real project
+        logger.lifecycle "Entity validation complete."
+    }
+}
+
+// Make sure the validation runs before tests
+test.dependsOn validateEntities

@@ -1,0 +1,38 @@
+{
+  "module": "parent",
+  "description": "Root module managing build configuration, dependency versions, and project-wide settings for all submodules.",
+  "file_count": 5,
+  "module_path": "",
+  "interfaces": {},
+  "dependencies": {},
+  "classes": [],
+  "configFiles": [
+    {
+      "path": "build.gradle",
+      "description": "Root build file defining project-wide configurations and submodule relationships"
+    },
+    {
+      "path": "settings.gradle",
+      "description": "Project settings file declaring all submodules in the project"
+    },
+    {
+      "path": "gradle.properties",
+      "description": "Project-wide properties including version numbers and build settings"
+    },
+    {
+      "path": "gradle/wrapper/gradle-wrapper.properties",
+      "description": "Gradle wrapper configuration specifying Gradle version and distribution URL"
+    },
+    {
+      "path": "README.md",
+      "description": "Project documentation with setup instructions and module descriptions"
+    }
+  ],
+  "generationOrder": [
+    "gradle.properties",
+    "settings.gradle",
+    "build.gradle",
+    "gradle/wrapper/gradle-wrapper.properties",
+    "README.md"
+  ]
+}

@@ -1,0 +1,140 @@
+# ==========================================================================
+# Service Module Configuration Properties
+# ==========================================================================
+
+# Service Layer Settings
+service:
+  # Core Service Configuration
+  core:
+    enabled: true
+    cache:
+      enabled: true
+      max-size: 1000
+      ttl-seconds: 3600
+      eviction-policy: LRU
+    async:
+      core-pool-size: 5
+      max-pool-size: 10
+      queue-capacity: 25
+      thread-name-prefix: service-async-
+      await-termination-seconds: 60
+    logging:
+      request-response: true
+      execution-time: true
+  
+  # Security Configuration
+  security:
+    jwt:
+      secret: ${JWT_SECRET:QjFkEP5SKwp7yVxLbUjLSSPMrZVSPffT}
+      expiration-ms: 86400000  # 24 hours
+      refresh-token-expiration-ms: 604800000  # 7 days
+      token-prefix: Bearer
+      header-name: Authorization
+    password:
+      encoder-strength: 12
+      min-length: 8
+      require-special-chars: true
+      require-digits: true
+      require-uppercase: true
+
+  # Notification Service Configuration
+  notification:
+    enabled: true
+    default-sender: system@gradle80.com
+    max-retries: 3
+    retry-delay-ms: 1000
+    types:
+      - USER_REGISTRATION
+      - ORDER_CREATED
+      - ORDER_UPDATED
+      - ORDER_CANCELLED
+      - PASSWORD_RESET
+
+  # AWS Integration Settings
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY:}
+      secret-key: ${AWS_SECRET_KEY:}
+    sns:
+      enabled: true
+      endpoint: ${AWS_SNS_ENDPOINT:}
+      topics:
+        user-events: ${USER_EVENTS_TOPIC_ARN:user-events}
+        order-events: ${ORDER_EVENTS_TOPIC_ARN:order-events}
+        notification-events: ${NOTIFICATION_EVENTS_TOPIC_ARN:notification-events}
+    sqs:
+      enabled: true
+      endpoint: ${AWS_SQS_ENDPOINT:}
+      queues:
+        user-events: ${USER_EVENTS_QUEUE_URL:user-events}
+        order-events: ${ORDER_EVENTS_QUEUE_URL:order-events}
+        notification-events: ${NOTIFICATION_EVENTS_QUEUE_URL:notification-events}
+      polling:
+        max-messages: 10
+        wait-time-seconds: 20
+        visibility-timeout-seconds: 30
+
+  # Event Processing
+  events:
+    handlers:
+      user-events:
+        enabled: true
+        async: true
+        batch-size: 10
+      order-events:
+        enabled: true
+        async: true
+        batch-size: 10
+    retry:
+      max-attempts: 3
+      backoff-initial-interval: 1000
+      backoff-multiplier: 2.0
+      backoff-max-interval: 10000
+
+  # Cache Configuration
+  cache:
+    products:
+      ttl-seconds: 1800  # 30 minutes
+      max-size: 500
+    users:
+      ttl-seconds: 3600  # 1 hour
+      max-size: 200
+    orders:
+      ttl-seconds: 900   # 15 minutes
+      max-size: 100
+
+  # Service-specific Timeouts (milliseconds)
+  timeouts:
+    user-service: 5000
+    product-service: 3000
+    order-service: 8000
+    search-service: 10000
+    authentication-service: 2000
+    notification-service: 5000
+
+# Metrics and Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.gradle80.service: INFO
+    com.gradle80.service.implementation: DEBUG
+    com.gradle80.service.security: DEBUG
+    com.gradle80.service.event: INFO
+    com.gradle80.service.aws: INFO
+
+# TODO: Configure production-specific service properties
+# FIXME: Sensitive information should be externalized and not stored in config

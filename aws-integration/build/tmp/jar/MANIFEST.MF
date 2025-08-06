@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: aws-integration
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: davhasan
+Built-Date: Wed Aug 06 13:17:42 PDT 2025
+Built-JDK: 1.8.0_462
+

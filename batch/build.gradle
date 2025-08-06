@@ -1,0 +1,135 @@
+/*
+ * Build file for the 'batch' module
+ * 
+ * This module provides batch processing capabilities using Spring Batch
+ * for scheduled data processing and transformation.
+ */
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'Batch processing capabilities using Spring Batch for scheduled data processing and transformation'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    awsSdkVersion = '1.12.150'
+}
+
+dependencies {
+    // Project dependencies
+    implementation project(':common')
+    implementation project(':data')
+    implementation project(':service')
+    implementation project(':aws-integration')
+    
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    
+    // Spring Batch
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    
+    // Spring Data
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    // AWS SDK for SQS/SNS integration
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    // Database
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.postgresql:postgresql'
+    
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'org.testng:testng'
+    testImplementation 'junit:junit'
+    testImplementation 'org.mockito:mockito-core'
+}
+
+// Configure TestNG test execution
+test {
+    useTestNG() {
+        // Enable parallel test execution where safe
+        parallel = 'methods'
+        threadCount = Runtime.runtime.availableProcessors()
+    }
+    
+    // Show standard streams during tests
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+}
+
+// Create a dummy file for the jar
+task createDummyFile {
+    def dummyFile = file("${buildDir}/dummy/batch-placeholder.txt")
+    outputs.file dummyFile
+    doLast {
+        dummyFile.parentFile.mkdirs()
+        dummyFile.text = "This is a placeholder file for the batch module jar."
+    }
+}
+
+bootJar {
+    dependsOn createDummyFile
+    from("${buildDir}/dummy")
+    enabled = true
+    archiveClassifier.set('boot')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+    dependsOn createDummyFile
+    from("${buildDir}/dummy")
+    enabled = true
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    // Include metadata about the build
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date(),
+            'Built-JDK': System.getProperty('java.version')
+        )
+    }
+}
+
+// FIXME: Verify Spring Batch version compatibility with Spring Boot version
+
+/*
+ * This module contains the following components:
+ * - Configuration classes (BatchConfig, BatchProperties)
+ * - Listeners (BatchJobCompletionListener)
+ * - Item readers (DataProcessingItemReader, FileItemReader, JdbcItemReader)
+ * - Item processors (DataProcessingItemProcessor, ValidationItemProcessor, CompositeItemProcessor)
+ * - Item writers (DatabaseItemWriter, FileItemWriter, SqsItemWriter)
+ * - Job definitions (DataProcessingJob, ReportGenerationJob, NotificationJob)
+ * - Job management (BatchScheduler, BatchJobController, BatchJobMonitor)
+ * - Repositories (BatchJobExecutionRepository)
+ * - Services (TransformationService)
+ * - Utilities (BatchJobParametersBuilder)
+ * - Tests (BatchIntegrationTests, BatchUnitTests)
+ */

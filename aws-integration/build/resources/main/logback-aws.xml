@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  Logback configuration for AWS Integration module
+  
+  This configuration provides specialized logging for AWS components including:
+  - SNS and SQS client operations
+  - AWS credential management
+  - Message processing pipelines
+  - AWS health checks
+  
+  Log levels can be adjusted based on environment via Spring Boot properties
+-->
+<configuration>
+    <!-- Import Spring Boot base configuration -->
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    
+    <!-- AWS integration specific appender with JSON formatting for cloud logging -->
+    <appender name="AWS_JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/aws-integration.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/aws-integration.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <customFields>{"application":"gradle80","module":"aws-integration"}</customFields>
+        </encoder>
+    </appender>
+
+    <!-- AWS client libraries -->
+    <logger name="com.amazonaws" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <!-- AWS request/response wire logging (very verbose, enable only for debugging) -->
+    <logger name="com.amazonaws.request" level="WARN" />
+    <logger name="com.amazonaws.latency" level="WARN" />
+    
+    <!-- Application AWS components -->
+    <logger name="com.gradle80.aws.sns" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <logger name="com.gradle80.aws.sqs" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <logger name="com.gradle80.aws.security" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <logger name="com.gradle80.aws.health" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <!-- Message processing pipeline with more detailed logging -->
+    <logger name="com.gradle80.aws.sqs.DefaultMessageProcessor" level="DEBUG">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <logger name="com.gradle80.aws.sqs.RetryableMessageProcessor" level="DEBUG">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <!-- Error handlers with WARN level -->
+    <logger name="com.gradle80.aws.error.AwsErrorHandler" level="WARN">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <!-- Spring Cloud AWS -->
+    <logger name="org.springframework.cloud.aws" level="INFO">
+        <appender-ref ref="AWS_JSON_FILE" />
+    </logger>
+    
+    <!-- Root logger configuration -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+    
+    <!-- 
+        FIXME: Add CloudWatch log appender for production environments
+        TODO: Configure async appenders for improved performance
+    -->
+    
+    <!-- Environment specific configurations - activated through Spring profiles -->
+    <springProfile name="dev">
+        <logger name="com.gradle80.aws" level="DEBUG" />
+        <logger name="com.amazonaws" level="DEBUG" />
+    </springProfile>
+    
+    <springProfile name="test">
+        <logger name="com.gradle80.aws" level="DEBUG" />
+        <!-- Suppress verbose AWS client logs during tests -->
+        <logger name="com.amazonaws" level="WARN" />
+    </springProfile>
+    
+    <springProfile name="prod">
+        <logger name="com.gradle80.aws" level="INFO" />
+        <logger name="com.amazonaws" level="WARN" />
+    </springProfile>
+</configuration>

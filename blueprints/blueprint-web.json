@@ -1,0 +1,1119 @@
+{
+  "module": "web",
+  "description": "Web layer with REST controllers, request handlers, and web configurations for handling HTTP requests/responses.",
+  "file_count": 25,
+  "module_path": "web",
+  "interfaces": {
+    "ResponseEnhancer": "Interface for enhancing API responses"
+  },
+  "dependencies": {
+    "internal": ["common", "api", "service"],
+    "external": [
+      "spring-boot-starter-web",
+      "spring-boot-starter-security",
+      "spring-boot-starter-validation",
+      "springfox-swagger2",
+      "springfox-swagger-ui",
+      "lombok",
+      "org.testng:testng",
+      "junit:junit"
+    ]
+  },
+  "classes": [
+    {
+      "name": "UserController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for user operations",
+      "dependencies": ["UserService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "userService",
+          "type": "UserService",
+          "description": "User service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getUserById",
+          "returnType": "ResponseEntity<UserResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Get user"
+        },
+        {
+          "name": "createUser",
+          "returnType": "ResponseEntity<UserResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Create user"
+        },
+        {
+          "name": "updateUser",
+          "returnType": "ResponseEntity<UserResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Update user"
+        },
+        {
+          "name": "deleteUser",
+          "returnType": "ResponseEntity<UserResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Delete user"
+        }
+      ]
+    },
+    {
+      "name": "ProductController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for product operations",
+      "dependencies": ["ProductService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "productService",
+          "type": "ProductService",
+          "description": "Product service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getProductById",
+          "returnType": "ResponseEntity<ProductResponse>",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Get product"
+        },
+        {
+          "name": "createProduct",
+          "returnType": "ResponseEntity<ProductResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Create product"
+        },
+        {
+          "name": "updateProduct",
+          "returnType": "ResponseEntity<ProductResponse>",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Update product"
+        },
+        {
+          "name": "deleteProduct",
+          "returnType": "ResponseEntity<ProductResponse>",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Delete product"
+        },
+        {
+          "name": "searchProducts",
+          "returnType": "ResponseEntity<SearchResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Search products"
+        }
+      ]
+    },
+    {
+      "name": "OrderController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for order operations",
+      "dependencies": ["OrderService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "orderService",
+          "type": "OrderService",
+          "description": "Order service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getOrderById",
+          "returnType": "ResponseEntity<OrderResponse>",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Get order"
+        },
+        {
+          "name": "createOrder",
+          "returnType": "ResponseEntity<OrderResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "OrderRequest"
+            }
+          ],
+          "description": "Create order"
+        },
+        {
+          "name": "cancelOrder",
+          "returnType": "ResponseEntity<OrderResponse>",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Cancel order"
+        },
+        {
+          "name": "getUserOrders",
+          "returnType": "ResponseEntity<List<OrderResponse>>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "List orders"
+        }
+      ]
+    },
+    {
+      "name": "NotificationController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for notification operations",
+      "dependencies": ["NotificationService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "notificationService",
+          "type": "NotificationService",
+          "description": "Notification service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "sendNotification",
+          "returnType": "ResponseEntity<NotificationResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "NotificationRequest"
+            }
+          ],
+          "description": "Send notification"
+        },
+        {
+          "name": "getUserNotifications",
+          "returnType": "ResponseEntity<List<NotificationResponse>>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "List notifications"
+        },
+        {
+          "name": "markAsRead",
+          "returnType": "ResponseEntity<NotificationResponse>",
+          "parameters": [
+            {
+              "name": "notificationId",
+              "type": "Long"
+            }
+          ],
+          "description": "Mark read"
+        }
+      ]
+    },
+    {
+      "name": "AuthController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for authentication operations",
+      "dependencies": ["AuthenticationService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "authenticationService",
+          "type": "AuthenticationService",
+          "description": "Authentication service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "authenticate",
+          "returnType": "ResponseEntity<AuthenticationResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "AuthenticationRequest"
+            }
+          ],
+          "description": "Authenticate user"
+        },
+        {
+          "name": "validateToken",
+          "returnType": "ResponseEntity<Boolean>",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Validate token"
+        },
+        {
+          "name": "refreshToken",
+          "returnType": "ResponseEntity<AuthenticationResponse>",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Refresh token"
+        }
+      ]
+    },
+    {
+      "name": "SearchController",
+      "package": "com.gradle80.web.controller",
+      "type": "controller",
+      "description": "REST controller for search operations",
+      "dependencies": ["SearchService", "ResponseEnhancer"],
+      "fields": [
+        {
+          "name": "searchService",
+          "type": "SearchService",
+          "description": "Search service"
+        },
+        {
+          "name": "responseEnhancer",
+          "type": "ResponseEnhancer",
+          "description": "Response enhancer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "search",
+          "returnType": "ResponseEntity<SearchResponse>",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Perform search"
+        },
+        {
+          "name": "getCategories",
+          "returnType": "ResponseEntity<List<String>>",
+          "parameters": [],
+          "description": "List categories"
+        }
+      ]
+    },
+    {
+      "name": "WebConfig",
+      "package": "com.gradle80.web.config",
+      "type": "config",
+      "description": "Web module configuration",
+      "dependencies": ["ResponseEnhancer"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "corsConfigurer",
+          "returnType": "WebMvcConfigurer",
+          "parameters": [],
+          "description": "Configure CORS"
+        },
+        {
+          "name": "responseEnhancer",
+          "returnType": "ResponseEnhancer",
+          "parameters": [],
+          "description": "Response enhancer"
+        }
+      ]
+    },
+    {
+      "name": "SecurityConfig",
+      "package": "com.gradle80.web.config",
+      "type": "config",
+      "description": "Web security configuration",
+      "dependencies": ["AuthenticationService", "JwtAuthenticationFilter"],
+      "fields": [
+        {
+          "name": "authenticationService",
+          "type": "AuthenticationService",
+          "description": "Authentication service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "configure",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "http",
+              "type": "HttpSecurity"
+            }
+          ],
+          "description": "Configure security"
+        },
+        {
+          "name": "jwtAuthenticationFilter",
+          "returnType": "JwtAuthenticationFilter",
+          "parameters": [],
+          "description": "JWT filter"
+        }
+      ]
+    },
+    {
+      "name": "JwtAuthenticationFilter",
+      "package": "com.gradle80.web.security",
+      "type": "security",
+      "description": "JWT authentication filter",
+      "dependencies": ["AuthenticationService"],
+      "fields": [
+        {
+          "name": "authenticationService",
+          "type": "AuthenticationService",
+          "description": "Authentication service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doFilterInternal",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "HttpServletResponse"
+            },
+            {
+              "name": "filterChain",
+              "type": "FilterChain"
+            }
+          ],
+          "description": "Filter requests"
+        },
+        {
+          "name": "extractToken",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            }
+          ],
+          "description": "Extract token"
+        }
+      ]
+    },
+    {
+      "name": "ResponseEnhancer",
+      "package": "com.gradle80.web.filter",
+      "type": "interface",
+      "description": "Interface for enhancing API responses",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "enhance",
+          "returnType": "ResponseEntity<?>",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "Object"
+            },
+            {
+              "name": "status",
+              "type": "HttpStatus"
+            }
+          ],
+          "description": "Enhance response"
+        }
+      ]
+    },
+    {
+      "name": "StandardResponseEnhancer",
+      "package": "com.gradle80.web.filter",
+      "type": "service",
+      "description": "Standard implementation of response enhancer",
+      "dependencies": ["ResponseEnhancer"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "enhance",
+          "returnType": "ResponseEntity<?>",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "Object"
+            },
+            {
+              "name": "status",
+              "type": "HttpStatus"
+            }
+          ],
+          "description": "Enhance response"
+        },
+        {
+          "name": "addStandardHeaders",
+          "returnType": "HttpHeaders",
+          "parameters": [],
+          "description": "Add headers"
+        }
+      ]
+    },
+    {
+      "name": "RequestLoggingFilter",
+      "package": "com.gradle80.web.filter",
+      "type": "filter",
+      "description": "Filter for logging incoming requests",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "logger",
+          "type": "Logger",
+          "description": "Logger instance"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doFilter",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "ServletResponse"
+            },
+            {
+              "name": "chain",
+              "type": "FilterChain"
+            }
+          ],
+          "description": "Filter method"
+        },
+        {
+          "name": "logRequest",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            }
+          ],
+          "description": "Log request"
+        }
+      ]
+    },
+    {
+      "name": "WebExceptionHandler",
+      "package": "com.gradle80.web.exception",
+      "type": "exception",
+      "description": "Global web exception handler",
+      "dependencies": ["ErrorResponse"],
+      "fields": [
+        {
+          "name": "logger",
+          "type": "Logger",
+          "description": "Logger instance"
+        }
+      ],
+      "methods": [
+        {
+          "name": "handleEntityNotFoundException",
+          "returnType": "ResponseEntity<ErrorResponse>",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "EntityNotFoundException"
+            }
+          ],
+          "description": "Handle not-found"
+        },
+        {
+          "name": "handleAuthenticationException",
+          "returnType": "ResponseEntity<ErrorResponse>",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "AuthenticationException"
+            }
+          ],
+          "description": "Handle auth-error"
+        },
+        {
+          "name": "handleValidationException",
+          "returnType": "ResponseEntity<ErrorResponse>",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "ValidationException"
+            }
+          ],
+          "description": "Handle validation"
+        },
+        {
+          "name": "handleGeneralException",
+          "returnType": "ResponseEntity<ErrorResponse>",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "Exception"
+            }
+          ],
+          "description": "Handle general"
+        }
+      ]
+    },
+    {
+      "name": "AccessDeniedHandlerImpl",
+      "package": "com.gradle80.web.security",
+      "type": "security",
+      "description": "Custom access denied handler",
+      "dependencies": ["ErrorResponse"],
+      "fields": [
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "handle",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "HttpServletResponse"
+            },
+            {
+              "name": "ex",
+              "type": "AccessDeniedException"
+            }
+          ],
+          "description": "Handle access-denied"
+        }
+      ]
+    },
+    {
+      "name": "AuthEntryPoint",
+      "package": "com.gradle80.web.security",
+      "type": "security",
+      "description": "Authentication entry point for unauthorized requests",
+      "dependencies": ["ErrorResponse"],
+      "fields": [
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "commence",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "HttpServletResponse"
+            },
+            {
+              "name": "ex",
+              "type": "AuthenticationException"
+            }
+          ],
+          "description": "Handle auth-failure"
+        }
+      ]
+    },
+    {
+      "name": "ApiDocumentationConfig",
+      "package": "com.gradle80.web.config",
+      "type": "config",
+      "description": "Swagger API documentation configuration",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "api",
+          "returnType": "Docket",
+          "parameters": [],
+          "description": "API documentation"
+        },
+        {
+          "name": "apiInfo",
+          "returnType": "ApiInfo",
+          "parameters": [],
+          "description": "API information"
+        }
+      ]
+    },
+    {
+      "name": "WebApplication",
+      "package": "com.gradle80.web",
+      "type": "application",
+      "description": "Main web application entry point",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "main",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "args",
+              "type": "String[]"
+            }
+          ],
+          "description": "Application entry"
+        }
+      ]
+    },
+    {
+      "name": "ValidationUtil",
+      "package": "com.gradle80.web.util",
+      "type": "util",
+      "description": "Utility for request validation",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "validateRequestFields",
+          "returnType": "List<String>",
+          "parameters": [
+            {
+              "name": "object",
+              "type": "Object"
+            }
+          ],
+          "description": "Validate fields"
+        }
+      ]
+    },
+    {
+      "name": "HeaderUtil",
+      "package": "com.gradle80.web.util",
+      "type": "util",
+      "description": "Utility for HTTP header management",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "createEntityCreatedHeaders",
+          "returnType": "HttpHeaders",
+          "parameters": [
+            {
+              "name": "entityId",
+              "type": "Long"
+            }
+          ],
+          "description": "Creation headers"
+        },
+        {
+          "name": "createEntityUpdateHeaders",
+          "returnType": "HttpHeaders",
+          "parameters": [
+            {
+              "name": "entityId",
+              "type": "Long"
+            }
+          ],
+          "description": "Update headers"
+        },
+        {
+          "name": "createEntityDeletionHeaders",
+          "returnType": "HttpHeaders",
+          "parameters": [
+            {
+              "name": "entityId",
+              "type": "Long"
+            }
+          ],
+          "description": "Deletion headers"
+        }
+      ]
+    },
+    {
+      "name": "ResponseUtil",
+      "package": "com.gradle80.web.util",
+      "type": "util",
+      "description": "Utility for HTTP response generation",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "wrapOrNotFound",
+          "returnType": "ResponseEntity<?>",
+          "parameters": [
+            {
+              "name": "maybeResponse",
+              "type": "Optional<?>"
+            }
+          ],
+          "description": "Wrap optional"
+        },
+        {
+          "name": "createSuccessResponse",
+          "returnType": "ResponseEntity<?>",
+          "parameters": [
+            {
+              "name": "body",
+              "type": "Object"
+            }
+          ],
+          "description": "Success response"
+        },
+        {
+          "name": "createErrorResponse",
+          "returnType": "ResponseEntity<ErrorResponse>",
+          "parameters": [
+            {
+              "name": "errorCode",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "String"
+            },
+            {
+              "name": "status",
+              "type": "HttpStatus"
+            }
+          ],
+          "description": "Error response"
+        }
+      ]
+    },
+    {
+      "name": "RequestContext",
+      "package": "com.gradle80.web.context",
+      "type": "context",
+      "description": "Thread-local context for request information",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "currentContext",
+          "type": "ThreadLocal<RequestContext>",
+          "description": "Thread-local context"
+        },
+        {
+          "name": "requestId",
+          "type": "String",
+          "description": "Request identifier"
+        },
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "startTime",
+          "type": "long",
+          "description": "Request start"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getCurrentContext",
+          "returnType": "RequestContext",
+          "parameters": [],
+          "description": "Get context"
+        },
+        {
+          "name": "setCurrentContext",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "RequestContext"
+            }
+          ],
+          "description": "Set context"
+        },
+        {
+          "name": "clear",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Clear context"
+        }
+      ]
+    },
+    {
+      "name": "RequestContextFilter",
+      "package": "com.gradle80.web.filter",
+      "type": "filter",
+      "description": "Filter for setting request context",
+      "dependencies": ["RequestContext"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "doFilter",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "ServletResponse"
+            },
+            {
+              "name": "chain",
+              "type": "FilterChain"
+            }
+          ],
+          "description": "Filter method"
+        },
+        {
+          "name": "initializeContext",
+          "returnType": "RequestContext",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            }
+          ],
+          "description": "Initialize context"
+        }
+      ]
+    },
+    {
+      "name": "RateLimitFilter",
+      "package": "com.gradle80.web.filter",
+      "type": "filter",
+      "description": "Filter for API rate limiting",
+      "dependencies": ["ErrorResponse"],
+      "fields": [
+        {
+          "name": "rateLimitCache",
+          "type": "Map<String, RateLimit>",
+          "description": "Rate limit cache"
+        },
+        {
+          "name": "requestsPerMinute",
+          "type": "int",
+          "description": "Request limit"
+        },
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "doFilter",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ServletRequest"
+            },
+            {
+              "name": "response",
+              "type": "ServletResponse"
+            },
+            {
+              "name": "chain",
+              "type": "FilterChain"
+            }
+          ],
+          "description": "Filter method"
+        },
+        {
+          "name": "checkRateLimit",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "clientIp",
+              "type": "String"
+            }
+          ],
+          "description": "Check limit"
+        },
+        {
+          "name": "getClientIp",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "HttpServletRequest"
+            }
+          ],
+          "description": "Extract IP"
+        }
+      ]
+    },
+    {
+      "name": "RateLimit",
+      "package": "com.gradle80.web.model",
+      "type": "model",
+      "description": "Model for rate limit tracking",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "count",
+          "type": "int",
+          "description": "Request count"
+        },
+        {
+          "name": "resetTime",
+          "type": "long",
+          "description": "Reset timestamp"
+        }
+      ],
+      "methods": [
+        {
+          "name": "incrementCount",
+          "returnType": "int",
+          "parameters": [],
+          "description": "Increment count"
+        },
+        {
+          "name": "shouldReset",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Check reset"
+        },
+        {
+          "name": "reset",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Reset counter"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "web/build.gradle",
+      "description": "Build file for the web module"
+    },
+    {
+      "path": "web/src/main/resources/application.yml",
+      "description": "Main application configuration properties"
+    },
+    {
+      "path": "web/src/main/resources/application-dev.yml",
+      "description": "Development environment configuration"
+    },
+    {
+      "path": "web/src/main/resources/application-prod.yml",
+      "description": "Production environment configuration"
+    }
+  ],
+  "generationOrder": [
+    "ResponseEnhancer",
+    "RateLimit",
+    "RequestContext",
+    "StandardResponseEnhancer",
+    "ValidationUtil",
+    "HeaderUtil",
+    "ResponseUtil",
+    "JwtAuthenticationFilter",
+    "AccessDeniedHandlerImpl",
+    "AuthEntryPoint",
+    "RequestContextFilter",
+    "RequestLoggingFilter",
+    "RateLimitFilter",
+    "WebConfig",
+    "SecurityConfig",
+    "ApiDocumentationConfig",
+    "WebExceptionHandler",
+    "UserController",
+    "ProductController",
+    "OrderController",
+    "NotificationController",
+    "AuthController",
+    "SearchController",
+    "WebApplication"
+  ]
+}

@@ -1,0 +1,100 @@
+/*
+ * Build file for the 'common' module
+ * 
+ * This module contains common utilities, shared models, and core components
+ * used across all modules in the gradle80 project.
+ */
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'Common utilities, shared models, and core components used across all modules'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    awsSdkVersion = '1.12.150'
+    jacksonVersion = '2.13.0'
+}
+
+dependencies {
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter'
+    
+    // AWS SDK
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testng:testng:7.4.0'
+    testImplementation 'junit:junit:4.13.2'
+    
+    // TODO: Add version-specific dependencies if necessary
+}
+
+// Configure TestNG test execution
+test {
+    useTestNG() {
+        // Enable parallel test execution
+        parallel = 'methods'
+        threadCount = Runtime.runtime.availableProcessors()
+    }
+    
+    // Always run tests
+    failFast = false
+    
+    // Show standard streams
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+}
+
+// Ensure this common module is packaged as JAR (not WAR)
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    // Include metadata about the build
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date(),
+            'Built-JDK': System.getProperty('java.version')
+        )
+    }
+}
+
+// FIXME: Verify AWS SDK versions are compatible with Spring Boot version
+
+/*
+ * This module contains the following components:
+ * - BaseEntity, BaseDto: Base models for entity classes and DTOs
+ * - ApiResponse, PageRequest, PageResponse: API request/response models
+ * - Exception classes (BaseException, ResourceNotFoundException, ValidationException)
+ * - Error handling (ErrorResponseProvider, ErrorResponse)
+ * - Utility classes for dates, strings, JSON, validation, logging, security
+ * - Configuration classes
+ */

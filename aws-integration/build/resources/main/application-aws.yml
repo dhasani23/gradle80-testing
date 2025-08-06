@@ -1,0 +1,89 @@
+# AWS Integration Configuration for gradle80
+# This file contains configuration properties for AWS messaging services (SNS/SQS)
+
+# AWS Core Configuration
+aws:
+  region: us-east-1
+  credentials:
+    access-key: ${AWS_ACCESS_KEY:AKIAIOSFODNN7EXAMPLE}
+    secret-key: ${AWS_SECRET_KEY:wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY}
+    # Use environment variables in production environments
+    profile: ${AWS_PROFILE:default}
+
+# SNS Configuration
+sns:
+  enabled: true
+  endpoint-url: ${SNS_ENDPOINT_URL:https://sns.us-east-1.amazonaws.com}
+  topics:
+    notifications:
+      name: ${SNS_NOTIFICATIONS_TOPIC:gradle80-notifications}
+      arn: ${SNS_NOTIFICATIONS_ARN:arn:aws:sns:us-east-1:123456789012:gradle80-notifications}
+    alerts:
+      name: ${SNS_ALERTS_TOPIC:gradle80-alerts}
+      arn: ${SNS_ALERTS_ARN:arn:aws:sns:us-east-1:123456789012:gradle80-alerts}
+    events:
+      name: ${SNS_EVENTS_TOPIC:gradle80-events}
+      arn: ${SNS_EVENTS_ARN:arn:aws:sns:us-east-1:123456789012:gradle80-events}
+  publisher:
+    retry:
+      max-attempts: 3
+      backoff-period-ms: 1000
+
+# SQS Configuration
+sqs:
+  enabled: true
+  endpoint-url: ${SQS_ENDPOINT_URL:https://sqs.us-east-1.amazonaws.com}
+  queues:
+    notifications:
+      url: ${SQS_NOTIFICATIONS_QUEUE_URL:https://sqs.us-east-1.amazonaws.com/123456789012/gradle80-notifications}
+      name: ${SQS_NOTIFICATIONS_QUEUE:gradle80-notifications}
+    alerts:
+      url: ${SQS_ALERTS_QUEUE_URL:https://sqs.us-east-1.amazonaws.com/123456789012/gradle80-alerts}
+      name: ${SQS_ALERTS_QUEUE:gradle80-alerts}
+    events:
+      url: ${SQS_EVENTS_QUEUE_URL:https://sqs.us-east-1.amazonaws.com/123456789012/gradle80-events}
+      name: ${SQS_EVENTS_QUEUE:gradle80-events}
+  listener:
+    polling-interval-ms: 5000
+    max-messages-per-poll: 10
+    visibility-timeout-seconds: 30
+
+# Dead Letter Queue Configuration
+dead-letter:
+  enabled: true
+  max-receives: 3
+  queues:
+    main-dlq:
+      url: ${DLQ_MAIN_URL:https://sqs.us-east-1.amazonaws.com/123456789012/gradle80-dlq}
+      name: ${DLQ_MAIN_NAME:gradle80-dlq}
+
+# Health Check Configuration
+health:
+  aws:
+    check-interval-ms: 60000
+    sns-check-enabled: true
+    sqs-check-enabled: true
+
+# Local Development Support
+# Set to true to use localstack or similar local AWS emulator
+local:
+  aws:
+    enabled: ${LOCAL_AWS_ENABLED:false}
+    endpoint: ${LOCAL_AWS_ENDPOINT:http://localhost:4566}
+    region: ${LOCAL_AWS_REGION:us-east-1}
+
+# Logging Configuration for AWS Components
+logging:
+  level:
+    com.amazonaws: INFO
+    com.gradle80.aws: DEBUG
+
+# Connection Configuration
+connection:
+  timeout-ms: 5000
+  socket-timeout-ms: 5000
+  max-connections: 50
+  max-error-retry: 3
+
+# TODO: Configure custom metric namespaces for CloudWatch monitoring
+# FIXME: Add support for AWS X-Ray tracing

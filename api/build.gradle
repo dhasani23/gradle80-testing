@@ -1,0 +1,119 @@
+/**
+ * Build file for the API module
+ * 
+ * This module contains API definitions defining service contracts with models, 
+ * request/response objects, and Swagger documentation.
+ */
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'API definitions defining service contracts with models, request/response objects, and Swagger documentation'
+
+ext {
+    awsSdkVersion = '1.12.150'
+    aspectjVersion = '1.9.7'
+}
+
+dependencies {
+    // Internal module dependencies
+    implementation project(':common')
+    
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    
+    // AspectJ
+    implementation "org.aspectj:aspectjrt:${aspectjVersion}"
+    implementation "org.aspectj:aspectjweaver:${aspectjVersion}"
+    
+    // Swagger dependencies
+    implementation 'io.springfox:springfox-swagger2:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+    
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    
+    // Lombok for reducing boilerplate code
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Validation API
+    implementation 'javax.validation:validation-api'
+    
+    // AWS dependencies for notification services
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // Test dependencies
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testng:testng'
+    testImplementation 'junit:junit'
+}
+
+// This module is a library module, not an executable application
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    archiveBaseName = 'api'
+    archiveVersion = project.version
+}
+
+// Javadoc configuration
+javadoc {
+    options.addBooleanOption('html5', true)
+    options.addStringOption('Xdoclint:none', '-quiet')
+    
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+    
+    // Document API packages
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+    
+    title = "API Module Documentation - ${project.version}"
+}
+
+// Create source JAR for publishing
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+// Create Javadoc JAR for publishing
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+// Configure Java compiler options
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+}
+
+// Configure the test task
+test {
+    // Use TestNG as the primary test framework
+    useTestNG()
+    
+    // Show test output and detailed error information
+    testLogging {
+        events "passed", "skipped", "failed"
+        showExceptions true
+        exceptionFormat "full"
+        showCauses true
+        showStackTraces true
+    }
+}
+
+// TODO: Add integration test configuration when needed

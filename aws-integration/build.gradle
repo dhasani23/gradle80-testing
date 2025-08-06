@@ -1,0 +1,140 @@
+/*
+ * Build file for the 'aws-integration' module
+ *
+ * This module provides integration with AWS messaging services including SNS publishing 
+ * and SQS message handling capabilities
+ */
+
+plugins {
+    id 'java'
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'Integration with AWS messaging services providing SNS publishing and SQS message handling capabilities'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    awsSdkSnsVersion = '1.12.150'
+    awsSdkSqsVersion = '1.12.150'
+    testngVersion = '7.4.0'
+    junitVersion = '4.13.2'
+    springCloudVersion = '2020.0.4'
+}
+
+dependencies {
+    // Internal module dependencies
+    implementation project(':common')
+    implementation project(':api')
+    
+    // Spring Boot & Spring Cloud AWS
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE'
+    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure:2.2.6.RELEASE'
+    
+    // AWS SDK dependencies
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkSnsVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkSqsVersion}"
+    
+    // Jackson for JSON processing
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "org.testng:testng:${testngVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.assertj:assertj-core'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+test {
+    // Use both JUnit and TestNG
+    useTestNG() {
+        // Enable parallel test execution
+        parallel = 'methods'
+        threadCount = Runtime.runtime.availableProcessors()
+        
+        // Include specific test groups if needed
+        includeGroups 'unit', 'integration'
+        
+        // Exclude slow tests in regular builds
+        excludeGroups 'slow'
+    }
+    
+    // Always run tests
+    failFast = false
+    
+    // Show test execution
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+}
+
+// This is a library module that should be included in other modules
+// So disable the bootJar and enable the regular jar
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+    // Include metadata about the build
+    manifest {
+        attributes(
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Built-Date': new Date(),
+            'Built-JDK': System.getProperty('java.version')
+        )
+    }
+}
+
+// Integration test task for AWS services
+task integrationTest(type: Test) {
+    description = 'Runs AWS integration tests.'
+    group = 'verification'
+    
+    useTestNG {
+        includeGroups 'integration'
+    }
+    
+    // Only run these tests explicitly, not as part of regular test cycle
+    mustRunAfter test
+}
+
+// Task to check AWS credentials and connection
+task checkAwsConnection(type: JavaExec) {
+    description = 'Checks AWS connection and credentials'
+    group = 'verification'
+    
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.gradle80.aws.tools.AwsConnectionChecker'
+    
+    // Set this to true to actually execute the task
+    enabled = false
+}
+
+// TODO: Add automated testing against localstack for AWS integration tests
+// FIXME: Ensure credentials handling is secure and not committed to VCS

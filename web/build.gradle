@@ -1,0 +1,130 @@
+/**
+ * Build file for the web module
+ * 
+ * This module contains REST controllers, request handlers, and web configurations
+ * for handling HTTP requests/responses.
+ */
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+description = 'Web layer with REST controllers, request handlers, and web configurations for handling HTTP requests/responses'
+
+ext {
+    swaggerVersion = '3.0.0'
+    awsSdkVersion = '1.12.150'
+    lombokVersion = '1.18.20'
+    jacksonVersion = '2.13.3' // Updated Jackson version that includes StreamWriteException
+    testngVersion = '7.4.0'
+    junitVersion = '4.13.2'
+    mockitoVersion = '3.12.4'
+    assertjVersion = '3.21.0'
+}
+
+dependencies {
+    // Internal project dependencies
+    implementation project(':common')
+    implementation project(':api')
+    implementation project(':service')
+    implementation project(':data')
+    
+    // Spring Boot dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    // Swagger documentation
+    implementation "io.springfox:springfox-swagger2:${swaggerVersion}"
+    implementation "io.springfox:springfox-swagger-ui:${swaggerVersion}"
+    
+    // AWS dependencies
+    implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
+    implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
+    
+    // JPA and persistence dependencies
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    
+    // Lombok for reducing boilerplate code
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    
+    // JSON processing
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+    
+    // Testing dependencies
+    testImplementation "org.testng:testng:${testngVersion}"
+    testImplementation "junit:junit:${junitVersion}"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
+}
+
+test {
+    // Use both TestNG and JUnit
+    useTestNG()
+    
+    // Configure test logging
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+    
+    // Set system properties for testing
+    systemProperty 'spring.profiles.active', 'test'
+}
+
+// Create a dummy file for the jar
+task createDummyFile {
+    def dummyFile = file("${buildDir}/dummy/web-placeholder.txt")
+    outputs.file dummyFile
+    doLast {
+        dummyFile.parentFile.mkdirs()
+        dummyFile.text = "This is a placeholder file for the web module jar."
+    }
+}
+
+// Configure dummy jar
+jar {
+    dependsOn createDummyFile
+    from("${buildDir}/dummy")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    enabled = true
+}
+
+// Configure JAR packaging
+bootJar {
+    dependsOn createDummyFile
+    from("${buildDir}/dummy")
+    archiveBaseName = 'gradle80-web'
+    archiveVersion = project.version
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    // Include build info
+    manifest {
+        attributes(
+            'Implementation-Title': 'Web Module',
+            'Implementation-Version': project.version,
+            'Built-By': System.getProperty('user.name'),
+            'Build-Timestamp': new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+            'Created-By': "Gradle ${gradle.gradleVersion}"
+        )
+    }
+}
+
+// Configure source and target compatibility explicitly for this module
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// FIXME: Add proper CORS configuration for production environments
+// TODO: Configure security settings for different deployment environments
+// TODO: Integrate with centralized logging system

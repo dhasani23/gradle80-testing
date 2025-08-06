@@ -1,0 +1,1178 @@
+{
+  "module": "service",
+  "description": "Core business logic implementing application services, business rules, and domain operations.",
+  "file_count": 25,
+  "module_path": "service",
+  "interfaces": {
+    "EventHandler": "Interface for handling application events",
+    "CacheManager": "Interface for managing application caches"
+  },
+  "dependencies": {
+    "internal": ["common", "api", "data"],
+    "external": [
+      "spring-boot-starter",
+      "spring-boot-starter-validation",
+      "com.amazonaws:aws-java-sdk-sns",
+      "com.amazonaws:aws-java-sdk-sqs",
+      "lombok",
+      "org.testng:testng",
+      "junit:junit"
+    ]
+  },
+  "classes": [
+    {
+      "name": "UserServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of user management service",
+      "dependencies": ["UserService", "UserRepository", "UserMapper", "ApplicationEventPublisher"],
+      "fields": [
+        {
+          "name": "userRepository",
+          "type": "UserRepository",
+          "description": "User repository"
+        },
+        {
+          "name": "userMapper",
+          "type": "UserMapper",
+          "description": "User mapper"
+        },
+        {
+          "name": "eventPublisher",
+          "type": "ApplicationEventPublisher",
+          "description": "Event publisher"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getUserById",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves user"
+        },
+        {
+          "name": "createUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Creates user"
+        },
+        {
+          "name": "updateUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Updates user"
+        },
+        {
+          "name": "deleteUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Deletes user"
+        }
+      ]
+    },
+    {
+      "name": "ProductServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of product management service",
+      "dependencies": ["ProductService", "ProductRepository", "ProductMapper", "SearchService", "CacheManager"],
+      "fields": [
+        {
+          "name": "productRepository",
+          "type": "ProductRepository",
+          "description": "Product repository"
+        },
+        {
+          "name": "productMapper",
+          "type": "ProductMapper",
+          "description": "Product mapper"
+        },
+        {
+          "name": "cacheManager",
+          "type": "CacheManager",
+          "description": "Cache manager"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getProductById",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves product"
+        },
+        {
+          "name": "createProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Creates product"
+        },
+        {
+          "name": "updateProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Updates product"
+        },
+        {
+          "name": "deleteProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Deletes product"
+        },
+        {
+          "name": "searchProducts",
+          "returnType": "SearchResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Searches products"
+        }
+      ]
+    },
+    {
+      "name": "OrderServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of order processing service",
+      "dependencies": ["OrderService", "OrderRepository", "ProductRepository", "OrderMapper", "NotificationService", "ApplicationEventPublisher"],
+      "fields": [
+        {
+          "name": "orderRepository",
+          "type": "OrderRepository",
+          "description": "Order repository"
+        },
+        {
+          "name": "productRepository",
+          "type": "ProductRepository",
+          "description": "Product repository"
+        },
+        {
+          "name": "orderMapper",
+          "type": "OrderMapper",
+          "description": "Order mapper"
+        },
+        {
+          "name": "notificationService",
+          "type": "NotificationService",
+          "description": "Notification service"
+        },
+        {
+          "name": "eventPublisher",
+          "type": "ApplicationEventPublisher",
+          "description": "Event publisher"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getOrderById",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves order"
+        },
+        {
+          "name": "createOrder",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "OrderRequest"
+            }
+          ],
+          "description": "Creates order"
+        },
+        {
+          "name": "cancelOrder",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Cancels order"
+        },
+        {
+          "name": "getUserOrders",
+          "returnType": "List<OrderResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Lists orders"
+        }
+      ]
+    },
+    {
+      "name": "NotificationServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of notification service",
+      "dependencies": ["NotificationService", "NotificationRepository", "NotificationMapper", "SnsClient"],
+      "fields": [
+        {
+          "name": "notificationRepository",
+          "type": "NotificationRepository",
+          "description": "Notification repository"
+        },
+        {
+          "name": "notificationMapper",
+          "type": "NotificationMapper",
+          "description": "Notification mapper"
+        },
+        {
+          "name": "snsClient",
+          "type": "SnsClient",
+          "description": "SNS client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "sendNotification",
+          "returnType": "NotificationResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "NotificationRequest"
+            }
+          ],
+          "description": "Sends notification"
+        },
+        {
+          "name": "getUserNotifications",
+          "returnType": "List<NotificationResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Lists notifications"
+        },
+        {
+          "name": "markAsRead",
+          "returnType": "NotificationResponse",
+          "parameters": [
+            {
+              "name": "notificationId",
+              "type": "Long"
+            }
+          ],
+          "description": "Updates status"
+        }
+      ]
+    },
+    {
+      "name": "AuthenticationServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of authentication service",
+      "dependencies": ["AuthenticationService", "UserRepository", "JwtTokenProvider"],
+      "fields": [
+        {
+          "name": "userRepository",
+          "type": "UserRepository",
+          "description": "User repository"
+        },
+        {
+          "name": "passwordEncoder",
+          "type": "PasswordEncoder",
+          "description": "Password encoder"
+        },
+        {
+          "name": "tokenProvider",
+          "type": "JwtTokenProvider",
+          "description": "Token provider"
+        }
+      ],
+      "methods": [
+        {
+          "name": "authenticate",
+          "returnType": "AuthenticationResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "AuthenticationRequest"
+            }
+          ],
+          "description": "Authenticates user"
+        },
+        {
+          "name": "validateToken",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Validates token"
+        },
+        {
+          "name": "refreshToken",
+          "returnType": "AuthenticationResponse",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Refreshes token"
+        }
+      ]
+    },
+    {
+      "name": "SearchServiceImpl",
+      "package": "com.gradle80.service.implementation",
+      "type": "service",
+      "description": "Implementation of search service",
+      "dependencies": ["SearchService", "ProductRepository", "ProductMapper"],
+      "fields": [
+        {
+          "name": "productRepository",
+          "type": "ProductRepository",
+          "description": "Product repository"
+        },
+        {
+          "name": "productMapper",
+          "type": "ProductMapper",
+          "description": "Product mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "search",
+          "returnType": "SearchResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Performs search"
+        },
+        {
+          "name": "getCategories",
+          "returnType": "List<String>",
+          "parameters": [],
+          "description": "Lists categories"
+        }
+      ]
+    },
+    {
+      "name": "JwtTokenProvider",
+      "package": "com.gradle80.service.security",
+      "type": "security",
+      "description": "JWT token generation and validation",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "secretKey",
+          "type": "String",
+          "description": "Secret key"
+        },
+        {
+          "name": "validityInMilliseconds",
+          "type": "long",
+          "description": "Token validity"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createToken",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "username",
+              "type": "String"
+            },
+            {
+              "name": "roles",
+              "type": "List<String>"
+            }
+          ],
+          "description": "Creates token"
+        },
+        {
+          "name": "getUsername",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Extracts username"
+        },
+        {
+          "name": "validateToken",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Validates token"
+        }
+      ]
+    },
+    {
+      "name": "UserMapper",
+      "package": "com.gradle80.service.mapper",
+      "type": "mapper",
+      "description": "Mapping between user entity and DTOs",
+      "dependencies": ["User", "UserDto"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "toEntity",
+          "returnType": "User",
+          "parameters": [
+            {
+              "name": "userDto",
+              "type": "UserDto"
+            }
+          ],
+          "description": "DTO to entity"
+        },
+        {
+          "name": "toDto",
+          "returnType": "UserDto",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "User"
+            }
+          ],
+          "description": "Entity to DTO"
+        }
+      ]
+    },
+    {
+      "name": "ProductMapper",
+      "package": "com.gradle80.service.mapper",
+      "type": "mapper",
+      "description": "Mapping between product entity and DTOs",
+      "dependencies": ["Product", "ProductDto"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "toEntity",
+          "returnType": "Product",
+          "parameters": [
+            {
+              "name": "productDto",
+              "type": "ProductDto"
+            }
+          ],
+          "description": "DTO to entity"
+        },
+        {
+          "name": "toDto",
+          "returnType": "ProductDto",
+          "parameters": [
+            {
+              "name": "product",
+              "type": "Product"
+            }
+          ],
+          "description": "Entity to DTO"
+        }
+      ]
+    },
+    {
+      "name": "OrderMapper",
+      "package": "com.gradle80.service.mapper",
+      "type": "mapper",
+      "description": "Mapping between order entity and DTOs",
+      "dependencies": ["Order", "OrderDto", "ProductMapper"],
+      "fields": [
+        {
+          "name": "productMapper",
+          "type": "ProductMapper",
+          "description": "Product mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "toEntity",
+          "returnType": "Order",
+          "parameters": [
+            {
+              "name": "orderDto",
+              "type": "OrderDto"
+            }
+          ],
+          "description": "DTO to entity"
+        },
+        {
+          "name": "toDto",
+          "returnType": "OrderDto",
+          "parameters": [
+            {
+              "name": "order",
+              "type": "Order"
+            }
+          ],
+          "description": "Entity to DTO"
+        }
+      ]
+    },
+    {
+      "name": "NotificationMapper",
+      "package": "com.gradle80.service.mapper",
+      "type": "mapper",
+      "description": "Mapping between notification entity and DTOs",
+      "dependencies": ["Notification", "NotificationDto"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "toEntity",
+          "returnType": "Notification",
+          "parameters": [
+            {
+              "name": "notificationDto",
+              "type": "NotificationDto"
+            }
+          ],
+          "description": "DTO to entity"
+        },
+        {
+          "name": "toDto",
+          "returnType": "NotificationDto",
+          "parameters": [
+            {
+              "name": "notification",
+              "type": "Notification"
+            }
+          ],
+          "description": "Entity to DTO"
+        }
+      ]
+    },
+    {
+      "name": "SnsClient",
+      "package": "com.gradle80.service.aws",
+      "type": "service",
+      "description": "AWS SNS service client",
+      "dependencies": ["AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "SNS client"
+        },
+        {
+          "name": "topicArn",
+          "type": "String",
+          "description": "Topic ARN"
+        }
+      ],
+      "methods": [
+        {
+          "name": "publishMessage",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "subject",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "String"
+            }
+          ],
+          "description": "Publishes message"
+        }
+      ]
+    },
+    {
+      "name": "SqsClient",
+      "package": "com.gradle80.service.aws",
+      "type": "service",
+      "description": "AWS SQS service client",
+      "dependencies": ["AmazonSQS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS client"
+        },
+        {
+          "name": "queueUrl",
+          "type": "String",
+          "description": "Queue URL"
+        }
+      ],
+      "methods": [
+        {
+          "name": "sendMessage",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "String"
+            }
+          ],
+          "description": "Sends message"
+        },
+        {
+          "name": "receiveMessage",
+          "returnType": "List<String>",
+          "parameters": [],
+          "description": "Receives messages"
+        },
+        {
+          "name": "deleteMessage",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "receiptHandle",
+              "type": "String"
+            }
+          ],
+          "description": "Deletes message"
+        }
+      ]
+    },
+    {
+      "name": "EventHandler",
+      "package": "com.gradle80.service.event",
+      "type": "interface",
+      "description": "Interface for handling application events",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "handleEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "Object"
+            }
+          ],
+          "description": "Handles event"
+        }
+      ]
+    },
+    {
+      "name": "OrderEventHandler",
+      "package": "com.gradle80.service.event",
+      "type": "service",
+      "description": "Handler for order-related events",
+      "dependencies": ["EventHandler", "SnsClient", "NotificationService"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "SnsClient",
+          "description": "SNS client"
+        },
+        {
+          "name": "notificationService",
+          "type": "NotificationService",
+          "description": "Notification service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "handleEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "Object"
+            }
+          ],
+          "description": "Handles event"
+        },
+        {
+          "name": "handleOrderCreatedEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "OrderCreatedEvent"
+            }
+          ],
+          "description": "Handles creation"
+        },
+        {
+          "name": "handleOrderCancelledEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "OrderCancelledEvent"
+            }
+          ],
+          "description": "Handles cancellation"
+        }
+      ]
+    },
+    {
+      "name": "UserEventHandler",
+      "package": "com.gradle80.service.event",
+      "type": "service",
+      "description": "Handler for user-related events",
+      "dependencies": ["EventHandler", "SnsClient"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "SnsClient",
+          "description": "SNS client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "handleEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "Object"
+            }
+          ],
+          "description": "Handles event"
+        },
+        {
+          "name": "handleUserCreatedEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "UserCreatedEvent"
+            }
+          ],
+          "description": "Handles creation"
+        },
+        {
+          "name": "handleUserDeletedEvent",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "event",
+              "type": "UserDeletedEvent"
+            }
+          ],
+          "description": "Handles deletion"
+        }
+      ]
+    },
+    {
+      "name": "OrderCreatedEvent",
+      "package": "com.gradle80.service.event",
+      "type": "model",
+      "description": "Event representing order creation",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "Long",
+          "description": "Order identifier"
+        },
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Event timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "OrderCancelledEvent",
+      "package": "com.gradle80.service.event",
+      "type": "model",
+      "description": "Event representing order cancellation",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "orderId",
+          "type": "Long",
+          "description": "Order identifier"
+        },
+        {
+          "name": "reason",
+          "type": "String",
+          "description": "Cancellation reason"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Event timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserCreatedEvent",
+      "package": "com.gradle80.service.event",
+      "type": "model",
+      "description": "Event representing user creation",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "description": "User name"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Event timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserDeletedEvent",
+      "package": "com.gradle80.service.event",
+      "type": "model",
+      "description": "Event representing user deletion",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Event timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "CacheManager",
+      "package": "com.gradle80.service.cache",
+      "type": "interface",
+      "description": "Interface for managing application caches",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "get",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            },
+            {
+              "name": "clazz",
+              "type": "Class<?>"
+            }
+          ],
+          "description": "Retrieves entry"
+        },
+        {
+          "name": "put",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "Object"
+            },
+            {
+              "name": "ttlSeconds",
+              "type": "long"
+            }
+          ],
+          "description": "Stores entry"
+        },
+        {
+          "name": "evict",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            }
+          ],
+          "description": "Removes entry"
+        }
+      ]
+    },
+    {
+      "name": "InMemoryCacheManager",
+      "package": "com.gradle80.service.cache",
+      "type": "service",
+      "description": "In-memory implementation of cache manager",
+      "dependencies": ["CacheManager"],
+      "fields": [
+        {
+          "name": "cache",
+          "type": "Map<String, CacheEntry>",
+          "description": "Cache storage"
+        }
+      ],
+      "methods": [
+        {
+          "name": "get",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            },
+            {
+              "name": "clazz",
+              "type": "Class<?>"
+            }
+          ],
+          "description": "Retrieves entry"
+        },
+        {
+          "name": "put",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "Object"
+            },
+            {
+              "name": "ttlSeconds",
+              "type": "long"
+            }
+          ],
+          "description": "Stores entry"
+        },
+        {
+          "name": "evict",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "cacheKey",
+              "type": "String"
+            }
+          ],
+          "description": "Removes entry"
+        },
+        {
+          "name": "cleanExpiredEntries",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Cleans cache"
+        }
+      ]
+    },
+    {
+      "name": "CacheEntry",
+      "package": "com.gradle80.service.cache",
+      "type": "model",
+      "description": "Model representing a cache entry",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "value",
+          "type": "Object",
+          "description": "Cached value"
+        },
+        {
+          "name": "expiryTime",
+          "type": "long",
+          "description": "Expiration timestamp"
+        }
+      ],
+      "methods": [
+        {
+          "name": "isExpired",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Checks expiration"
+        }
+      ]
+    },
+    {
+      "name": "ServiceConfig",
+      "package": "com.gradle80.service.config",
+      "type": "config",
+      "description": "Service module configuration",
+      "dependencies": ["CacheManager", "InMemoryCacheManager", "SnsClient", "SqsClient"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "cacheManager",
+          "returnType": "CacheManager",
+          "parameters": [],
+          "description": "Cache configuration"
+        },
+        {
+          "name": "snsClient",
+          "returnType": "SnsClient",
+          "parameters": [],
+          "description": "SNS configuration"
+        },
+        {
+          "name": "sqsClient",
+          "returnType": "SqsClient",
+          "parameters": [],
+          "description": "SQS configuration"
+        },
+        {
+          "name": "passwordEncoder",
+          "returnType": "PasswordEncoder",
+          "parameters": [],
+          "description": "Security configuration"
+        }
+      ]
+    },
+    {
+      "name": "ServiceExceptionHandler",
+      "package": "com.gradle80.service.exception",
+      "type": "exception",
+      "description": "Global service exception handler",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "handleEntityNotFoundException",
+          "returnType": "ErrorResponse",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "EntityNotFoundException"
+            }
+          ],
+          "description": "Handles not-found"
+        },
+        {
+          "name": "handleAuthenticationException",
+          "returnType": "ErrorResponse",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "AuthenticationException"
+            }
+          ],
+          "description": "Handles auth-errors"
+        },
+        {
+          "name": "handleValidationException",
+          "returnType": "ErrorResponse",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "ValidationException"
+            }
+          ],
+          "description": "Handles validation"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "service/build.gradle",
+      "description": "Build file for the service module"
+    },
+    {
+      "path": "service/src/main/resources/application-service.yml",
+      "description": "Service-specific application properties"
+    }
+  ],
+  "generationOrder": [
+    "EventHandler", 
+    "CacheManager", 
+    "CacheEntry", 
+    "InMemoryCacheManager", 
+    "OrderCreatedEvent", 
+    "OrderCancelledEvent", 
+    "UserCreatedEvent", 
+    "UserDeletedEvent", 
+    "SnsClient", 
+    "SqsClient", 
+    "JwtTokenProvider", 
+    "UserMapper", 
+    "ProductMapper", 
+    "OrderMapper", 
+    "NotificationMapper", 
+    "UserServiceImpl", 
+    "ProductServiceImpl", 
+    "OrderServiceImpl", 
+    "NotificationServiceImpl", 
+    "AuthenticationServiceImpl", 
+    "SearchServiceImpl", 
+    "OrderEventHandler", 
+    "UserEventHandler", 
+    "ServiceConfig", 
+    "ServiceExceptionHandler"
+  ]
+}

@@ -1,0 +1,209 @@
+# Production Environment Configuration for gradle80 Web Module
+# This configuration file contains production-specific properties
+# Last updated: 2023-12-05
+
+# Server configuration
+server:
+  port: 80
+  error:
+    include-stacktrace: never
+    include-message: never
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+    min-response-size: 2048
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 400
+    min-spare-threads: 50
+    max-connections: 10000
+    accept-count: 100
+    connection-timeout: 20000
+    accesslog:
+      enabled: true
+      pattern: '%t %a "%r" %s %b %D ms'
+      directory: /var/log/gradle80
+      prefix: access_log
+      suffix: .log
+      rotate: true
+
+# Spring configuration
+spring:
+  profiles: prod
+  application:
+    name: gradle80-web
+  
+  # Database configuration - using managed PostgreSQL for production
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:gradle80}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 50
+      minimum-idle: 10
+      idle-timeout: 120000
+      max-lifetime: 1800000
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+        cache:
+          use_second_level_cache: true
+          region.factory_class: org.hibernate.cache.ehcache.EhCacheRegionFactory
+  
+  # Production cache configuration
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=10000,expireAfterWrite=3600s
+  
+  # Production-specific Jackson settings
+  jackson:
+    serialization:
+      indent-output: false
+      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
+    default-property-inclusion: non_null
+
+  # Production specific MVC settings
+  mvc:
+    log-request-details: false
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher  # For Swagger compatibility
+
+# Security configuration
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET_KEY}
+      expire-length: 3600000  # 1 hour in milliseconds
+  allowed-origins: ${ALLOWED_ORIGINS:https://www.gradle80.com}
+  public-urls: >
+    /api/auth/login,
+    /api/auth/refresh,
+    /api/public/**,
+    /swagger-ui/**,
+    /v3/api-docs/**
+
+# AWS configuration for production
+aws:
+  region: ${AWS_REGION:us-east-1}
+  sns:
+    enabled: true
+    topic-arns:
+      notification: ${SNS_NOTIFICATION_TOPIC_ARN}
+      user-event: ${SNS_USER_EVENT_TOPIC_ARN}
+      order-event: ${SNS_ORDER_EVENT_TOPIC_ARN}
+      product-event: ${SNS_PRODUCT_EVENT_TOPIC_ARN}
+  sqs:
+    enabled: true
+    queues:
+      notification-queue: ${SQS_NOTIFICATION_QUEUE_URL}
+      processing-queue: ${SQS_PROCESSING_QUEUE_URL}
+      user-event-queue: ${SQS_USER_EVENT_QUEUE_URL}
+      order-event-queue: ${SQS_ORDER_EVENT_QUEUE_URL}
+
+# API documentation - restricted in production
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /v2/api-docs
+    swagger-ui:
+      base-url: /swagger-ui
+      enabled: ${ENABLE_SWAGGER:false}
+
+# Custom application properties for production
+app:
+  api:
+    version: 1.0.0
+    title: Gradle80 API
+    description: Production REST API for the Gradle80 application
+  rate-limiting:
+    enabled: true
+    limit: ${API_RATE_LIMIT:100}
+    reset-period-seconds: 60
+  request-context:
+    enabled: true
+    include-user-details: false
+  logging:
+    request:
+      enabled: true
+      include-headers: false  # Don't log sensitive headers in production
+      include-payload: false  # Don't log payload in production for security
+      max-payload-length: 0
+    response:
+      enabled: true
+      include-headers: false  # Don't log sensitive headers in production
+      include-payload: false  # Don't log payload in production for security
+      max-payload-length: 0
+  feature-flags:
+    enable-experimental-apis: false
+    use-mock-services: false
+    enhanced-logging: false
+    test-mode: false
+
+# Management endpoints (restricted in production)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+      cors:
+        allowed-origins: ${ACTUATOR_ALLOWED_ORIGINS:https://monitoring.gradle80.com}
+        allowed-methods: GET, POST
+  endpoint:
+    health:
+      show-details: when_authorized
+      group:
+        readiness:
+          include: db, diskSpace, ping
+        liveness:
+          include: ping
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+    db:
+      enabled: true
+    redis:
+      enabled: false
+
+# Logging configuration for production
+logging:
+  level:
+    root: WARN
+    com.gradle80: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId}] - %msg%n"
+  file:
+    name: /var/log/gradle80/application.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 3GB
+
+# TODO: Configure centralized logging with ELK stack
+# TODO: Configure distributed tracing with Jaeger or Zipkin
+# FIXME: Ensure database connection pooling is optimally configured
+# FIXME: Verify AWS permissions are set correctly for prod access

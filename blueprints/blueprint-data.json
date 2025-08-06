@@ -1,0 +1,1011 @@
+{
+  "module": "data",
+  "description": "Data access layer with repositories, entities, and database configurations.",
+  "file_count": 25,
+  "module_path": "data",
+  "interfaces": {
+    "UserRepository": "Interface for user entity persistence operations",
+    "ProductRepository": "Interface for product entity persistence operations",
+    "OrderRepository": "Interface for order entity persistence operations",
+    "NotificationRepository": "Interface for notification entity persistence operations"
+  },
+  "dependencies": {
+    "internal": ["common"],
+    "external": [
+      "spring-boot-starter-data-jpa",
+      "spring-boot-starter-validation",
+      "spring-boot-starter-jdbc",
+      "h2database",
+      "lombok",
+      "jakarta.persistence-api",
+      "hibernate-core"
+    ]
+  },
+  "classes": [
+    {
+      "name": "UserEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "entity",
+      "description": "User database entity",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "description": "User name"
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "description": "Email address"
+        },
+        {
+          "name": "firstName",
+          "type": "String",
+          "description": "First name"
+        },
+        {
+          "name": "lastName",
+          "type": "String",
+          "description": "Last name"
+        },
+        {
+          "name": "passwordHash",
+          "type": "String",
+          "description": "Hashed password"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "description": "Account status"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "description": "Update timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "ProductEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "entity",
+      "description": "Product database entity",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "Product name"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "Product description"
+        },
+        {
+          "name": "price",
+          "type": "BigDecimal",
+          "description": "Product price"
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "description": "Product category"
+        },
+        {
+          "name": "available",
+          "type": "boolean",
+          "description": "Availability status"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "description": "Update timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "OrderEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "entity",
+      "description": "Order database entity",
+      "dependencies": ["UserEntity"],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "user",
+          "type": "UserEntity",
+          "description": "Order owner"
+        },
+        {
+          "name": "totalAmount",
+          "type": "BigDecimal",
+          "description": "Total amount"
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "description": "Order status"
+        },
+        {
+          "name": "shippingAddress",
+          "type": "String",
+          "description": "Shipping address"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "description": "Update timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "OrderItemEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "entity",
+      "description": "Order item database entity",
+      "dependencies": ["OrderEntity", "ProductEntity"],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "order",
+          "type": "OrderEntity",
+          "description": "Parent order"
+        },
+        {
+          "name": "product",
+          "type": "ProductEntity",
+          "description": "Product reference"
+        },
+        {
+          "name": "quantity",
+          "type": "Integer",
+          "description": "Item quantity"
+        },
+        {
+          "name": "priceAtOrder",
+          "type": "BigDecimal",
+          "description": "Historical price"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "NotificationEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "entity",
+      "description": "Notification database entity",
+      "dependencies": ["UserEntity"],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "user",
+          "type": "UserEntity",
+          "description": "Target user"
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "description": "Notification type"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "description": "Notification message"
+        },
+        {
+          "name": "read",
+          "type": "boolean",
+          "description": "Read status"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "repository",
+      "description": "Repository interface for user operations",
+      "dependencies": ["UserEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByUsername",
+          "returnType": "UserEntity",
+          "parameters": [
+            {
+              "name": "username",
+              "type": "String"
+            }
+          ],
+          "description": "Find user"
+        },
+        {
+          "name": "findByEmail",
+          "returnType": "UserEntity",
+          "parameters": [
+            {
+              "name": "email",
+              "type": "String"
+            }
+          ],
+          "description": "Find user"
+        },
+        {
+          "name": "findAllByActive",
+          "returnType": "List<UserEntity>",
+          "parameters": [
+            {
+              "name": "active",
+              "type": "boolean"
+            }
+          ],
+          "description": "Filter users"
+        }
+      ]
+    },
+    {
+      "name": "ProductRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "repository",
+      "description": "Repository interface for product operations",
+      "dependencies": ["ProductEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByNameContainingIgnoreCase",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "String"
+            }
+          ],
+          "description": "Search products"
+        },
+        {
+          "name": "findByCategory",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "category",
+              "type": "String"
+            }
+          ],
+          "description": "Filter products"
+        },
+        {
+          "name": "findAllByAvailable",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "available",
+              "type": "boolean"
+            }
+          ],
+          "description": "Filter products"
+        },
+        {
+          "name": "findByPriceLessThan",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "price",
+              "type": "BigDecimal"
+            }
+          ],
+          "description": "Filter products"
+        }
+      ]
+    },
+    {
+      "name": "OrderRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "repository",
+      "description": "Repository interface for order operations",
+      "dependencies": ["OrderEntity", "UserEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByUser",
+          "returnType": "List<OrderEntity>",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "UserEntity"
+            }
+          ],
+          "description": "Find orders"
+        },
+        {
+          "name": "findByStatus",
+          "returnType": "List<OrderEntity>",
+          "parameters": [
+            {
+              "name": "status",
+              "type": "String"
+            }
+          ],
+          "description": "Filter orders"
+        },
+        {
+          "name": "countByUser",
+          "returnType": "int",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "UserEntity"
+            }
+          ],
+          "description": "Count orders"
+        },
+        {
+          "name": "findByCreatedAtBetween",
+          "returnType": "List<OrderEntity>",
+          "parameters": [
+            {
+              "name": "startDate",
+              "type": "Date"
+            },
+            {
+              "name": "endDate",
+              "type": "Date"
+            }
+          ],
+          "description": "Date range"
+        }
+      ]
+    },
+    {
+      "name": "OrderItemRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "repository",
+      "description": "Repository interface for order item operations",
+      "dependencies": ["OrderItemEntity", "OrderEntity", "ProductEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByOrder",
+          "returnType": "List<OrderItemEntity>",
+          "parameters": [
+            {
+              "name": "order",
+              "type": "OrderEntity"
+            }
+          ],
+          "description": "Find items"
+        },
+        {
+          "name": "findByProduct",
+          "returnType": "List<OrderItemEntity>",
+          "parameters": [
+            {
+              "name": "product",
+              "type": "ProductEntity"
+            }
+          ],
+          "description": "Find items"
+        },
+        {
+          "name": "deleteByOrder",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "order",
+              "type": "OrderEntity"
+            }
+          ],
+          "description": "Delete items"
+        }
+      ]
+    },
+    {
+      "name": "NotificationRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "repository",
+      "description": "Repository interface for notification operations",
+      "dependencies": ["NotificationEntity", "UserEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findByUser",
+          "returnType": "List<NotificationEntity>",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "UserEntity"
+            }
+          ],
+          "description": "Find notifications"
+        },
+        {
+          "name": "findByUserAndRead",
+          "returnType": "List<NotificationEntity>",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "UserEntity"
+            },
+            {
+              "name": "read",
+              "type": "boolean"
+            }
+          ],
+          "description": "Filter notifications"
+        },
+        {
+          "name": "countByUserAndRead",
+          "returnType": "int",
+          "parameters": [
+            {
+              "name": "user",
+              "type": "UserEntity"
+            },
+            {
+              "name": "read",
+              "type": "boolean"
+            }
+          ],
+          "description": "Count unread"
+        }
+      ]
+    },
+    {
+      "name": "BaseEntity",
+      "package": "com.gradle80.data.entity",
+      "type": "abstract",
+      "description": "Abstract base class for all entities",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Primary key"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updatedAt",
+          "type": "Date",
+          "description": "Update timestamp"
+        }
+      ],
+      "methods": [
+        {
+          "name": "prePersist",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Set timestamps"
+        },
+        {
+          "name": "preUpdate",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Update timestamp"
+        }
+      ]
+    },
+    {
+      "name": "DataSourceConfig",
+      "package": "com.gradle80.data.config",
+      "type": "config",
+      "description": "Database connection configuration",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "dataSource",
+          "returnType": "DataSource",
+          "parameters": [],
+          "description": "Database connection"
+        },
+        {
+          "name": "entityManagerFactory",
+          "returnType": "LocalContainerEntityManagerFactoryBean",
+          "parameters": [],
+          "description": "JPA configuration"
+        },
+        {
+          "name": "transactionManager",
+          "returnType": "PlatformTransactionManager",
+          "parameters": [],
+          "description": "Transaction manager"
+        }
+      ]
+    },
+    {
+      "name": "JpaAuditingConfig",
+      "package": "com.gradle80.data.config",
+      "type": "config",
+      "description": "JPA auditing configuration",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "auditorAware",
+          "returnType": "AuditorAware<String>",
+          "parameters": [],
+          "description": "Auditing provider"
+        }
+      ]
+    },
+    {
+      "name": "CustomJpaRepository",
+      "package": "com.gradle80.data.repository",
+      "type": "interface",
+      "description": "Custom repository base interface",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findAllActive",
+          "returnType": "List<T>",
+          "parameters": [],
+          "description": "Active entities"
+        },
+        {
+          "name": "softDelete",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "Long"
+            }
+          ],
+          "description": "Soft deletion"
+        }
+      ]
+    },
+    {
+      "name": "CustomJpaRepositoryImpl",
+      "package": "com.gradle80.data.repository",
+      "type": "class",
+      "description": "Implementation of custom repository methods",
+      "dependencies": ["CustomJpaRepository"],
+      "fields": [
+        {
+          "name": "entityManager",
+          "type": "EntityManager",
+          "description": "JPA manager"
+        }
+      ],
+      "methods": [
+        {
+          "name": "findAllActive",
+          "returnType": "List<T>",
+          "parameters": [],
+          "description": "Active entities"
+        },
+        {
+          "name": "softDelete",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "Long"
+            }
+          ],
+          "description": "Soft deletion"
+        }
+      ]
+    },
+    {
+      "name": "UserRepositoryCustom",
+      "package": "com.gradle80.data.repository.custom",
+      "type": "interface",
+      "description": "Custom repository methods for User",
+      "dependencies": ["UserEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findActiveUsersByRole",
+          "returnType": "List<UserEntity>",
+          "parameters": [
+            {
+              "name": "role",
+              "type": "String"
+            }
+          ],
+          "description": "Filter users"
+        },
+        {
+          "name": "updateLastLoginDate",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            },
+            {
+              "name": "loginDate",
+              "type": "Date"
+            }
+          ],
+          "description": "Update login"
+        }
+      ]
+    },
+    {
+      "name": "UserRepositoryCustomImpl",
+      "package": "com.gradle80.data.repository.custom",
+      "type": "class",
+      "description": "Implementation of custom User repository",
+      "dependencies": ["UserRepositoryCustom", "UserEntity"],
+      "fields": [
+        {
+          "name": "entityManager",
+          "type": "EntityManager",
+          "description": "JPA manager"
+        }
+      ],
+      "methods": [
+        {
+          "name": "findActiveUsersByRole",
+          "returnType": "List<UserEntity>",
+          "parameters": [
+            {
+              "name": "role",
+              "type": "String"
+            }
+          ],
+          "description": "Filter users"
+        },
+        {
+          "name": "updateLastLoginDate",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            },
+            {
+              "name": "loginDate",
+              "type": "Date"
+            }
+          ],
+          "description": "Update login"
+        }
+      ]
+    },
+    {
+      "name": "ProductRepositoryCustom",
+      "package": "com.gradle80.data.repository.custom",
+      "type": "interface",
+      "description": "Custom repository methods for Product",
+      "dependencies": ["ProductEntity"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "findProductsByFilters",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "String"
+            },
+            {
+              "name": "category",
+              "type": "String"
+            },
+            {
+              "name": "minPrice",
+              "type": "BigDecimal"
+            },
+            {
+              "name": "maxPrice",
+              "type": "BigDecimal"
+            }
+          ],
+          "description": "Filter products"
+        }
+      ]
+    },
+    {
+      "name": "ProductRepositoryCustomImpl",
+      "package": "com.gradle80.data.repository.custom",
+      "type": "class",
+      "description": "Implementation of custom Product repository",
+      "dependencies": ["ProductRepositoryCustom", "ProductEntity"],
+      "fields": [
+        {
+          "name": "entityManager",
+          "type": "EntityManager",
+          "description": "JPA manager"
+        }
+      ],
+      "methods": [
+        {
+          "name": "findProductsByFilters",
+          "returnType": "List<ProductEntity>",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "String"
+            },
+            {
+              "name": "category",
+              "type": "String"
+            },
+            {
+              "name": "minPrice",
+              "type": "BigDecimal"
+            },
+            {
+              "name": "maxPrice",
+              "type": "BigDecimal"
+            }
+          ],
+          "description": "Filter products"
+        }
+      ]
+    },
+    {
+      "name": "DatabaseInitializer",
+      "package": "com.gradle80.data.init",
+      "type": "component",
+      "description": "Database initialization component",
+      "dependencies": ["UserRepository", "ProductRepository"],
+      "fields": [
+        {
+          "name": "userRepository",
+          "type": "UserRepository",
+          "description": "User repository"
+        },
+        {
+          "name": "productRepository",
+          "type": "ProductRepository",
+          "description": "Product repository"
+        }
+      ],
+      "methods": [
+        {
+          "name": "initDatabase",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Initialize data"
+        },
+        {
+          "name": "createDefaultUsers",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Create users"
+        },
+        {
+          "name": "createSampleProducts",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Create products"
+        }
+      ]
+    },
+    {
+      "name": "DataModuleConfiguration",
+      "package": "com.gradle80.data.config",
+      "type": "config",
+      "description": "Main data module configuration",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "dataRepositoryRegistrar",
+          "returnType": "DataRepositoryRegistrar",
+          "parameters": [],
+          "description": "Repository registration"
+        }
+      ]
+    },
+    {
+      "name": "QueryDslConfig",
+      "package": "com.gradle80.data.config",
+      "type": "config",
+      "description": "QueryDSL configuration",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "jpaQueryFactory",
+          "returnType": "JPAQueryFactory",
+          "parameters": [],
+          "description": "Query factory"
+        }
+      ]
+    },
+    {
+      "name": "RepositoryExceptionHandler",
+      "package": "com.gradle80.data.exception",
+      "type": "component",
+      "description": "Repository exception handling",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "handleDataIntegrityViolation",
+          "returnType": "RuntimeException",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "DataIntegrityViolationException"
+            }
+          ],
+          "description": "Handle violations"
+        },
+        {
+          "name": "handleEntityNotFound",
+          "returnType": "RuntimeException",
+          "parameters": [
+            {
+              "name": "ex",
+              "type": "EntityNotFoundException"
+            }
+          ],
+          "description": "Handle not-found"
+        }
+      ]
+    },
+    {
+      "name": "DataModuleException",
+      "package": "com.gradle80.data.exception",
+      "type": "exception",
+      "description": "Custom data module exceptions",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "errorCode",
+          "type": "String",
+          "description": "Error code"
+        }
+      ],
+      "methods": [
+        {
+          "name": "forEntityNotFound",
+          "returnType": "DataModuleException",
+          "parameters": [
+            {
+              "name": "entityType",
+              "type": "String"
+            },
+            {
+              "name": "id",
+              "type": "Long"
+            }
+          ],
+          "description": "Factory method"
+        }
+      ]
+    },
+    {
+      "name": "EntityConverter",
+      "package": "com.gradle80.data.converter",
+      "type": "utility",
+      "description": "Entity conversion utilities",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "toDto",
+          "returnType": "T",
+          "parameters": [
+            {
+              "name": "entity",
+              "type": "E"
+            },
+            {
+              "name": "dtoClass",
+              "type": "Class<T>"
+            }
+          ],
+          "description": "Entity conversion"
+        },
+        {
+          "name": "toEntity",
+          "returnType": "E",
+          "parameters": [
+            {
+              "name": "dto",
+              "type": "T"
+            },
+            {
+              "name": "entityClass",
+              "type": "Class<E>"
+            }
+          ],
+          "description": "DTO conversion"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "data/build.gradle",
+      "description": "Build file for the data module"
+    },
+    {
+      "path": "data/src/main/resources/application-data.properties",
+      "description": "Data module properties including database configuration"
+    },
+    {
+      "path": "data/src/main/resources/db/migration/V1__create_base_schema.sql",
+      "description": "Flyway database migration script for initial schema creation"
+    },
+    {
+      "path": "data/src/main/resources/db/migration/V2__sample_data.sql",
+      "description": "Flyway database migration script for sample data"
+    }
+  ],
+  "generationOrder": [
+    "BaseEntity",
+    "UserEntity",
+    "ProductEntity",
+    "OrderEntity",
+    "OrderItemEntity",
+    "NotificationEntity",
+    "DataModuleException",
+    "RepositoryExceptionHandler",
+    "CustomJpaRepository",
+    "CustomJpaRepositoryImpl",
+    "UserRepository",
+    "UserRepositoryCustom",
+    "UserRepositoryCustomImpl",
+    "ProductRepository",
+    "ProductRepositoryCustom",
+    "ProductRepositoryCustomImpl",
+    "OrderRepository",
+    "OrderItemRepository",
+    "NotificationRepository",
+    "DataSourceConfig",
+    "JpaAuditingConfig",
+    "QueryDslConfig",
+    "DataModuleConfiguration",
+    "EntityConverter",
+    "DatabaseInitializer"
+  ]
+}

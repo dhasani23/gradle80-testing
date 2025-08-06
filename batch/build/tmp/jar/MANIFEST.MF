@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: batch
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: davhasan
+Built-Date: Wed Aug 06 13:17:43 PDT 2025
+Built-JDK: 1.8.0_462
+

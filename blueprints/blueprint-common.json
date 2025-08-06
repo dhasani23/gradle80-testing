@@ -1,0 +1,777 @@
+{
+    "module": "common",
+    "description": "Common utilities, shared models, and core components used across all modules.",
+    "file_count": 22,
+    "module_path": "common",
+    "interfaces": [
+        "com.gradle80.common.exception.ErrorResponseProvider",
+        "com.gradle80.common.util.DateTimeConverter",
+        "com.gradle80.common.validation.Validator"
+    ],
+    "dependencies": [
+        "lombok",
+        "spring-boot-starter",
+        "spring-boot-starter-test",
+        "testng",
+        "junit",
+        "aws-java-sdk-sns",
+        "aws-java-sdk-sqs",
+        "jackson-databind"
+    ],
+    "classes": [
+        {
+            "name": "BaseEntity",
+            "package": "com.gradle80.common.model",
+            "type": "model",
+            "description": "Base entity class with common fields and methods for persistence entities",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "Long",
+                    "description": "Entity identifier"
+                },
+                {
+                    "name": "createdDate",
+                    "type": "java.time.LocalDateTime",
+                    "description": "Creation timestamp"
+                },
+                {
+                    "name": "lastModifiedDate",
+                    "type": "java.time.LocalDateTime",
+                    "description": "Last modification"
+                },
+                {
+                    "name": "version",
+                    "type": "Integer",
+                    "description": "Entity version"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "prePersist",
+                    "returnType": "void",
+                    "parameters": [],
+                    "description": "Pre-persist callback"
+                },
+                {
+                    "name": "preUpdate",
+                    "returnType": "void",
+                    "parameters": [],
+                    "description": "Pre-update callback"
+                }
+            ]
+        },
+        {
+            "name": "BaseDto",
+            "package": "com.gradle80.common.dto",
+            "type": "model",
+            "description": "Base data transfer object with common fields",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "Long",
+                    "description": "DTO identifier"
+                },
+                {
+                    "name": "createdDate",
+                    "type": "java.time.LocalDateTime",
+                    "description": "Creation timestamp"
+                },
+                {
+                    "name": "lastModifiedDate",
+                    "type": "java.time.LocalDateTime",
+                    "description": "Last modification"
+                }
+            ],
+            "methods": []
+        },
+        {
+            "name": "ApiResponse",
+            "package": "com.gradle80.common.dto",
+            "type": "model",
+            "description": "Generic API response wrapper",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "success",
+                    "type": "boolean",
+                    "description": "Success indicator"
+                },
+                {
+                    "name": "message",
+                    "type": "String",
+                    "description": "Response message"
+                },
+                {
+                    "name": "data",
+                    "type": "T",
+                    "description": "Response payload"
+                },
+                {
+                    "name": "timestamp",
+                    "type": "java.time.LocalDateTime",
+                    "description": "Response timestamp"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "ofSuccess",
+                    "returnType": "ApiResponse<T>",
+                    "parameters": [
+                        {
+                            "name": "data",
+                            "type": "T"
+                        }
+                    ],
+                    "description": "Success factory"
+                },
+                {
+                    "name": "ofError",
+                    "returnType": "ApiResponse<T>",
+                    "parameters": [
+                        {
+                            "name": "message",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Error factory"
+                }
+            ]
+        },
+        {
+            "name": "PageRequest",
+            "package": "com.gradle80.common.dto",
+            "type": "model",
+            "description": "Pagination request parameters",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "page",
+                    "type": "int",
+                    "description": "Page number"
+                },
+                {
+                    "name": "size",
+                    "type": "int",
+                    "description": "Page size"
+                },
+                {
+                    "name": "sortBy",
+                    "type": "String",
+                    "description": "Sort field"
+                },
+                {
+                    "name": "sortDirection",
+                    "type": "String",
+                    "description": "Sort direction"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "defaultInstance",
+                    "returnType": "PageRequest",
+                    "parameters": [],
+                    "description": "Default pagination"
+                }
+            ]
+        },
+        {
+            "name": "PageResponse",
+            "package": "com.gradle80.common.dto",
+            "type": "model",
+            "description": "Pagination response wrapper",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "content",
+                    "type": "List<T>",
+                    "description": "Page content"
+                },
+                {
+                    "name": "totalElements",
+                    "type": "long",
+                    "description": "Total elements"
+                },
+                {
+                    "name": "totalPages",
+                    "type": "int",
+                    "description": "Total pages"
+                },
+                {
+                    "name": "currentPage",
+                    "type": "int",
+                    "description": "Current page"
+                },
+                {
+                    "name": "size",
+                    "type": "int",
+                    "description": "Page size"
+                }
+            ],
+            "methods": []
+        },
+        {
+            "name": "BaseException",
+            "package": "com.gradle80.common.exception",
+            "type": "exception",
+            "description": "Base exception class for all application exceptions",
+            "dependencies": [],
+            "fields": [
+                {
+                    "name": "errorCode",
+                    "type": "String",
+                    "description": "Error code"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "getErrorCode",
+                    "returnType": "String",
+                    "parameters": [],
+                    "description": "Get code"
+                }
+            ]
+        },
+        {
+            "name": "ResourceNotFoundException",
+            "package": "com.gradle80.common.exception",
+            "type": "exception",
+            "description": "Exception thrown when a requested resource is not found",
+            "dependencies": ["com.gradle80.common.exception.BaseException"],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "ResourceNotFoundException",
+                    "returnType": "void",
+                    "parameters": [
+                        {
+                            "name": "resourceName",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fieldName",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fieldValue",
+                            "type": "Object"
+                        }
+                    ],
+                    "description": "Constructor implementation"
+                }
+            ]
+        },
+        {
+            "name": "ValidationException",
+            "package": "com.gradle80.common.exception",
+            "type": "exception",
+            "description": "Exception thrown when validation fails",
+            "dependencies": ["com.gradle80.common.exception.BaseException"],
+            "fields": [
+                {
+                    "name": "errors",
+                    "type": "Map<String, String>",
+                    "description": "Validation errors"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "getErrors",
+                    "returnType": "Map<String, String>",
+                    "parameters": [],
+                    "description": "Get errors"
+                }
+            ]
+        },
+        {
+            "name": "ErrorResponseProvider",
+            "package": "com.gradle80.common.exception",
+            "type": "interface",
+            "description": "Interface for providing error response information",
+            "dependencies": [],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "getErrorCode",
+                    "returnType": "String",
+                    "parameters": [],
+                    "description": "Error code"
+                },
+                {
+                    "name": "getErrorMessage",
+                    "returnType": "String",
+                    "parameters": [],
+                    "description": "Error message"
+                }
+            ]
+        },
+        {
+            "name": "ErrorResponse",
+            "package": "com.gradle80.common.dto",
+            "type": "model",
+            "description": "Standard error response format",
+            "dependencies": ["lombok.Data", "lombok.NoArgsConstructor", "lombok.AllArgsConstructor"],
+            "fields": [
+                {
+                    "name": "timestamp",
+                    "type": "LocalDateTime",
+                    "description": "Error timestamp"
+                },
+                {
+                    "name": "code",
+                    "type": "String",
+                    "description": "Error code"
+                },
+                {
+                    "name": "message",
+                    "type": "String",
+                    "description": "Error message"
+                },
+                {
+                    "name": "path",
+                    "type": "String",
+                    "description": "Request path"
+                },
+                {
+                    "name": "details",
+                    "type": "Map<String, Object>",
+                    "description": "Error details"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "builder",
+                    "returnType": "ErrorResponseBuilder",
+                    "parameters": [],
+                    "description": "Create builder"
+                }
+            ]
+        },
+        {
+            "name": "DateUtils",
+            "package": "com.gradle80.common.util",
+            "type": "utility",
+            "description": "Date and time utility methods",
+            "dependencies": [],
+            "fields": [
+                {
+                    "name": "DEFAULT_DATE_FORMAT",
+                    "type": "String",
+                    "description": "Standard format"
+                },
+                {
+                    "name": "DEFAULT_TIME_FORMAT",
+                    "type": "String",
+                    "description": "Standard format"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "formatDate",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "date",
+                            "type": "LocalDate"
+                        }
+                    ],
+                    "description": "Format date"
+                },
+                {
+                    "name": "formatDateTime",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "dateTime",
+                            "type": "LocalDateTime"
+                        }
+                    ],
+                    "description": "Format datetime"
+                },
+                {
+                    "name": "parseDate",
+                    "returnType": "LocalDate",
+                    "parameters": [
+                        {
+                            "name": "dateStr",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Parse date"
+                },
+                {
+                    "name": "parseDateTime",
+                    "returnType": "LocalDateTime",
+                    "parameters": [
+                        {
+                            "name": "dateTimeStr",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Parse datetime"
+                }
+            ]
+        },
+        {
+            "name": "StringUtils",
+            "package": "com.gradle80.common.util",
+            "type": "utility",
+            "description": "String manipulation utilities",
+            "dependencies": [],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "isNullOrEmpty",
+                    "returnType": "boolean",
+                    "parameters": [
+                        {
+                            "name": "str",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Check emptiness"
+                },
+                {
+                    "name": "toSlug",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "input",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Create slug"
+                },
+                {
+                    "name": "truncate",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "input",
+                            "type": "String"
+                        },
+                        {
+                            "name": "maxLength",
+                            "type": "int"
+                        }
+                    ],
+                    "description": "Truncate string"
+                }
+            ]
+        },
+        {
+            "name": "JsonUtils",
+            "package": "com.gradle80.common.util",
+            "type": "utility",
+            "description": "JSON serialization and deserialization utilities",
+            "dependencies": ["com.fasterxml.jackson.databind.ObjectMapper"],
+            "fields": [
+                {
+                    "name": "objectMapper",
+                    "type": "ObjectMapper",
+                    "description": "JSON mapper"
+                }
+            ],
+            "methods": [
+                {
+                    "name": "toJson",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "object",
+                            "type": "Object"
+                        }
+                    ],
+                    "description": "Serialize object"
+                },
+                {
+                    "name": "fromJson",
+                    "returnType": "T",
+                    "parameters": [
+                        {
+                            "name": "json",
+                            "type": "String"
+                        },
+                        {
+                            "name": "clazz",
+                            "type": "Class<T>"
+                        }
+                    ],
+                    "description": "Deserialize JSON"
+                }
+            ]
+        },
+        {
+            "name": "ValidationUtils",
+            "package": "com.gradle80.common.validation",
+            "type": "utility",
+            "description": "Validation utility methods",
+            "dependencies": ["com.gradle80.common.exception.ValidationException"],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "validateNotNull",
+                    "returnType": "void",
+                    "parameters": [
+                        {
+                            "name": "object",
+                            "type": "Object"
+                        },
+                        {
+                            "name": "fieldName",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Validate nullable"
+                },
+                {
+                    "name": "validateNotEmpty",
+                    "returnType": "void",
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "type": "String"
+                        },
+                        {
+                            "name": "fieldName",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Validate string"
+                },
+                {
+                    "name": "validateEmail",
+                    "returnType": "void",
+                    "parameters": [
+                        {
+                            "name": "email",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Validate email"
+                }
+            ]
+        },
+        {
+            "name": "Validator",
+            "package": "com.gradle80.common.validation",
+            "type": "interface",
+            "description": "Interface for validation implementations",
+            "dependencies": [],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "validate",
+                    "returnType": "void",
+                    "parameters": [
+                        {
+                            "name": "object",
+                            "type": "T"
+                        }
+                    ],
+                    "description": "Validate object"
+                }
+            ]
+        },
+        {
+            "name": "DateTimeConverter",
+            "package": "com.gradle80.common.util",
+            "type": "interface",
+            "description": "Interface for date/time conversions",
+            "dependencies": [],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "convertToString",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "dateTime",
+                            "type": "LocalDateTime"
+                        }
+                    ],
+                    "description": "Datetime formatting"
+                },
+                {
+                    "name": "convertFromString",
+                    "returnType": "LocalDateTime",
+                    "parameters": [
+                        {
+                            "name": "dateTimeString",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "String parsing"
+                }
+            ]
+        },
+        {
+            "name": "ApplicationProperties",
+            "package": "com.gradle80.common.config",
+            "type": "configuration",
+            "description": "Application-wide properties and settings",
+            "dependencies": ["lombok.Getter", "lombok.Setter", "org.springframework.boot.context.properties.ConfigurationProperties"],
+            "fields": [
+                {
+                    "name": "appName",
+                    "type": "String",
+                    "description": "Application name"
+                },
+                {
+                    "name": "version",
+                    "type": "String",
+                    "description": "Application version"
+                },
+                {
+                    "name": "environment",
+                    "type": "String",
+                    "description": "Runtime environment"
+                },
+                {
+                    "name": "defaultPageSize",
+                    "type": "int",
+                    "description": "Default pagination"
+                }
+            ],
+            "methods": []
+        },
+        {
+            "name": "CommonConfiguration",
+            "package": "com.gradle80.common.config",
+            "type": "configuration",
+            "description": "Common module Spring configuration",
+            "dependencies": ["org.springframework.context.annotation.Configuration", "org.springframework.context.annotation.Bean"],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "objectMapper",
+                    "returnType": "ObjectMapper",
+                    "parameters": [],
+                    "description": "JSON configuration"
+                },
+                {
+                    "name": "applicationProperties",
+                    "returnType": "ApplicationProperties",
+                    "parameters": [],
+                    "description": "Properties bean"
+                }
+            ]
+        },
+        {
+            "name": "LoggingUtils",
+            "package": "com.gradle80.common.util",
+            "type": "utility",
+            "description": "Logging utility methods",
+            "dependencies": ["org.slf4j.Logger", "org.slf4j.LoggerFactory"],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "getLogger",
+                    "returnType": "Logger",
+                    "parameters": [
+                        {
+                            "name": "clazz",
+                            "type": "Class<?>"
+                        }
+                    ],
+                    "description": "Get logger"
+                },
+                {
+                    "name": "logExecutionTime",
+                    "returnType": "T",
+                    "parameters": [
+                        {
+                            "name": "logger",
+                            "type": "Logger"
+                        },
+                        {
+                            "name": "operation",
+                            "type": "String"
+                        },
+                        {
+                            "name": "supplier",
+                            "type": "Supplier<T>"
+                        }
+                    ],
+                    "description": "Performance logging"
+                }
+            ]
+        },
+        {
+            "name": "SecurityUtils",
+            "package": "com.gradle80.common.security",
+            "type": "utility",
+            "description": "Security utility methods",
+            "dependencies": [],
+            "fields": [],
+            "methods": [
+                {
+                    "name": "generateSecureToken",
+                    "returnType": "String",
+                    "parameters": [],
+                    "description": "Generate token"
+                },
+                {
+                    "name": "hashPassword",
+                    "returnType": "String",
+                    "parameters": [
+                        {
+                            "name": "password",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Hash password"
+                },
+                {
+                    "name": "validatePassword",
+                    "returnType": "boolean",
+                    "parameters": [
+                        {
+                            "name": "rawPassword",
+                            "type": "String"
+                        },
+                        {
+                            "name": "encodedPassword",
+                            "type": "String"
+                        }
+                    ],
+                    "description": "Verify password"
+                }
+            ]
+        }
+    ],
+    "configFiles": [
+        {
+            "path": "common/build.gradle",
+            "description": "Gradle build file for the common module"
+        },
+        {
+            "path": "common/src/main/resources/application-common.properties",
+            "description": "Configuration properties for the common module"
+        }
+    ],
+    "generationOrder": [
+        "BaseEntity", 
+        "BaseDto", 
+        "ApiResponse",
+        "PageRequest", 
+        "PageResponse", 
+        "ErrorResponse", 
+        "BaseException", 
+        "ResourceNotFoundException", 
+        "ValidationException", 
+        "ErrorResponseProvider", 
+        "DateTimeConverter", 
+        "Validator", 
+        "DateUtils", 
+        "StringUtils", 
+        "JsonUtils", 
+        "ValidationUtils", 
+        "LoggingUtils", 
+        "SecurityUtils", 
+        "ApplicationProperties", 
+        "CommonConfiguration"
+    ]
+}

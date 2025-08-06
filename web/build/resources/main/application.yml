@@ -1,0 +1,138 @@
+# Application Configuration for gradle80 Web Module
+# This configuration file contains properties for the web module
+# Last updated: 2023-06-15
+
+# Server configuration
+server:
+  port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 200
+    min-spare-threads: 20
+    accesslog:
+      enabled: true
+      pattern: '%t %a "%r" %s %b %D ms'
+
+# Spring configuration
+spring:
+  application:
+    name: gradle80-web
+  profiles:
+    active: dev
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+  mvc:
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher  # For Swagger compatibility
+
+  # Database configuration - using H2 for dev
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Security configuration
+security:
+  jwt:
+    token:
+      secret-key: ${JWT_SECRET_KEY:secret}
+      expire-length: 3600000  # 1 hour in milliseconds
+  allowed-origins: "*"
+  public-urls: /api/auth/login,/api/auth/register,/swagger-ui/**,/v3/api-docs/**,/h2-console/**
+
+# AWS configuration
+aws:
+  region: us-east-1
+  sns:
+    enabled: true
+    topic-arns:
+      notification: arn:aws:sns:us-east-1:000000000000:notification-topic
+      user-event: arn:aws:sns:us-east-1:000000000000:user-event-topic
+  sqs:
+    enabled: true
+    queues:
+      notification-queue: notification-queue-url
+      processing-queue: processing-queue-url
+
+# API documentation
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /v2/api-docs
+    swagger-ui:
+      base-url: /swagger-ui
+
+# Custom application properties
+app:
+  api:
+    version: 1.0.0
+    title: Gradle80 API
+    description: REST API for the Gradle80 application
+  rate-limiting:
+    enabled: true
+    limit: 100
+    reset-period-seconds: 60
+  request-context:
+    enabled: true
+  logging:
+    request:
+      enabled: true
+      include-headers: true
+      include-payload: true
+      max-payload-length: 1000
+    response:
+      enabled: true
+      include-headers: true
+      include-payload: true
+      max-payload-length: 1000
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    com.gradle80: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/gradle80/application.log
+    max-size: 10MB
+    max-history: 7
+
+# TODO: Configure environment-specific properties with profiles
+# FIXME: Update AWS credentials mechanism to use IAM roles

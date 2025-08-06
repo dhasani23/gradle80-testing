@@ -1,0 +1,915 @@
+{
+  "module": "batch",
+  "description": "Batch processing capabilities using Spring Batch for scheduled data processing and transformation",
+  "file_count": 24,
+  "module_path": "batch",
+  "interfaces": {
+    "BatchJobCompletionNotifier": "Interface for batch job completion notification",
+    "BatchJobParametersValidator": "Interface for validating batch job parameters",
+    "ItemProcessor": "Interface for processing items in a batch job"
+  },
+  "dependencies": [
+    "common",
+    "data",
+    "service",
+    "aws-integration"
+  ],
+  "classes": [
+    {
+      "name": "BatchConfig",
+      "package": "com.gradle80.batch.config",
+      "type": "configuration",
+      "description": "Spring Batch configuration class that sets up the batch job infrastructure",
+      "dependencies": ["BatchJobCompletionListener", "JobBuilderFactory", "StepBuilderFactory"],
+      "fields": [
+        {
+          "name": "jobBuilderFactory",
+          "type": "JobBuilderFactory",
+          "description": "Job builder factory"
+        },
+        {
+          "name": "stepBuilderFactory",
+          "type": "StepBuilderFactory",
+          "description": "Step builder factory"
+        },
+        {
+          "name": "dataSource",
+          "type": "DataSource",
+          "description": "Database connection"
+        }
+      ],
+      "methods": [
+        {
+          "name": "dataSourceInitializer",
+          "returnType": "DataSourceInitializer",
+          "parameters": [
+            {
+              "name": "dataSource",
+              "type": "DataSource"
+            }
+          ],
+          "description": "Initialize datasource"
+        },
+        {
+          "name": "jobRepository",
+          "returnType": "JobRepository",
+          "parameters": [],
+          "description": "Configure repository"
+        },
+        {
+          "name": "transactionManager",
+          "returnType": "PlatformTransactionManager",
+          "parameters": [],
+          "description": "Configure transactions"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobCompletionListener",
+      "package": "com.gradle80.batch.listener",
+      "type": "listener",
+      "description": "Listener for batch job completion events",
+      "dependencies": ["JobExecution", "Logger"],
+      "fields": [
+        {
+          "name": "logger",
+          "type": "Logger",
+          "description": "Logging utility"
+        }
+      ],
+      "methods": [
+        {
+          "name": "afterJob",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "jobExecution",
+              "type": "JobExecution"
+            }
+          ],
+          "description": "Post-job processing"
+        },
+        {
+          "name": "beforeJob",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "jobExecution",
+              "type": "JobExecution"
+            }
+          ],
+          "description": "Pre-job preparation"
+        }
+      ]
+    },
+    {
+      "name": "BatchScheduler",
+      "package": "com.gradle80.batch.scheduler",
+      "type": "scheduler",
+      "description": "Scheduler for batch jobs using Spring Scheduling",
+      "dependencies": ["JobLauncher", "Job", "BatchJobParametersBuilder"],
+      "fields": [
+        {
+          "name": "jobLauncher",
+          "type": "JobLauncher",
+          "description": "Job launcher"
+        },
+        {
+          "name": "dataProcessingJob",
+          "type": "Job",
+          "description": "Main job"
+        },
+        {
+          "name": "reportGenerationJob",
+          "type": "Job",
+          "description": "Reporting job"
+        }
+      ],
+      "methods": [
+        {
+          "name": "scheduleDataProcessingJob",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Schedule processing"
+        },
+        {
+          "name": "scheduleReportGenerationJob",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Schedule reports"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobParametersBuilder",
+      "package": "com.gradle80.batch.util",
+      "type": "utility",
+      "description": "Builder for batch job parameters",
+      "dependencies": ["JobParameters"],
+      "fields": [
+        {
+          "name": "parameters",
+          "type": "Map<String, JobParameter>",
+          "description": "Parameter storage"
+        }
+      ],
+      "methods": [
+        {
+          "name": "addString",
+          "returnType": "BatchJobParametersBuilder",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "String"
+            }
+          ],
+          "description": "Add string"
+        },
+        {
+          "name": "addLong",
+          "returnType": "BatchJobParametersBuilder",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "Long"
+            }
+          ],
+          "description": "Add long"
+        },
+        {
+          "name": "addDate",
+          "returnType": "BatchJobParametersBuilder",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "String"
+            },
+            {
+              "name": "value",
+              "type": "Date"
+            }
+          ],
+          "description": "Add date"
+        },
+        {
+          "name": "toJobParameters",
+          "returnType": "JobParameters",
+          "parameters": [],
+          "description": "Create parameters"
+        }
+      ]
+    },
+    {
+      "name": "DataProcessingItemReader",
+      "package": "com.gradle80.batch.item.reader",
+      "type": "reader",
+      "description": "Item reader for data processing jobs",
+      "dependencies": ["ItemReader", "EntityRepository"],
+      "fields": [
+        {
+          "name": "repository",
+          "type": "EntityRepository",
+          "description": "Data repository"
+        },
+        {
+          "name": "batchSize",
+          "type": "int",
+          "description": "Read size"
+        },
+        {
+          "name": "currentIndex",
+          "type": "int",
+          "description": "Current position"
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "returnType": "Object",
+          "parameters": [],
+          "description": "Read item"
+        },
+        {
+          "name": "open",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "executionContext",
+              "type": "ExecutionContext"
+            }
+          ],
+          "description": "Initialize reader"
+        }
+      ]
+    },
+    {
+      "name": "FileItemReader",
+      "package": "com.gradle80.batch.item.reader",
+      "type": "reader",
+      "description": "Item reader for file-based input",
+      "dependencies": ["FlatFileItemReader", "LineMapper"],
+      "fields": [
+        {
+          "name": "fileResource",
+          "type": "Resource",
+          "description": "Input file"
+        },
+        {
+          "name": "lineMapper",
+          "type": "LineMapper",
+          "description": "Mapping logic"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createReader",
+          "returnType": "FlatFileItemReader",
+          "parameters": [],
+          "description": "Build reader"
+        }
+      ]
+    },
+    {
+      "name": "JdbcItemReader",
+      "package": "com.gradle80.batch.item.reader",
+      "type": "reader",
+      "description": "Item reader for database input",
+      "dependencies": ["JdbcCursorItemReader", "DataSource"],
+      "fields": [
+        {
+          "name": "dataSource",
+          "type": "DataSource",
+          "description": "Database connection"
+        },
+        {
+          "name": "sqlQuery",
+          "type": "String",
+          "description": "Query string"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createReader",
+          "returnType": "JdbcCursorItemReader",
+          "parameters": [],
+          "description": "Build reader"
+        }
+      ]
+    },
+    {
+      "name": "DataProcessingItemProcessor",
+      "package": "com.gradle80.batch.item.processor",
+      "type": "processor",
+      "description": "Item processor for data transformation",
+      "dependencies": ["ItemProcessor"],
+      "fields": [
+        {
+          "name": "transformationService",
+          "type": "TransformationService",
+          "description": "Transform service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "process",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "item",
+              "type": "Object"
+            }
+          ],
+          "description": "Process item"
+        }
+      ]
+    },
+    {
+      "name": "ValidationItemProcessor",
+      "package": "com.gradle80.batch.item.processor",
+      "type": "processor",
+      "description": "Item processor for data validation",
+      "dependencies": ["ItemProcessor", "Validator"],
+      "fields": [
+        {
+          "name": "validator",
+          "type": "Validator",
+          "description": "Validation service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "process",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "item",
+              "type": "Object"
+            }
+          ],
+          "description": "Validate item"
+        }
+      ]
+    },
+    {
+      "name": "CompositeItemProcessor",
+      "package": "com.gradle80.batch.item.processor",
+      "type": "processor",
+      "description": "Processor that chains multiple processors",
+      "dependencies": ["ItemProcessor"],
+      "fields": [
+        {
+          "name": "delegates",
+          "type": "List<ItemProcessor>",
+          "description": "Processor chain"
+        }
+      ],
+      "methods": [
+        {
+          "name": "process",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "item",
+              "type": "Object"
+            }
+          ],
+          "description": "Chain process"
+        }
+      ]
+    },
+    {
+      "name": "DatabaseItemWriter",
+      "package": "com.gradle80.batch.item.writer",
+      "type": "writer",
+      "description": "Item writer for database output",
+      "dependencies": ["JdbcBatchItemWriter", "DataSource"],
+      "fields": [
+        {
+          "name": "dataSource",
+          "type": "DataSource",
+          "description": "Database connection"
+        },
+        {
+          "name": "sqlQuery",
+          "type": "String",
+          "description": "Insert query"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createWriter",
+          "returnType": "JdbcBatchItemWriter",
+          "parameters": [],
+          "description": "Build writer"
+        }
+      ]
+    },
+    {
+      "name": "FileItemWriter",
+      "package": "com.gradle80.batch.item.writer",
+      "type": "writer",
+      "description": "Item writer for file output",
+      "dependencies": ["FlatFileItemWriter", "LineAggregator"],
+      "fields": [
+        {
+          "name": "outputResource",
+          "type": "Resource",
+          "description": "Output file"
+        },
+        {
+          "name": "lineAggregator",
+          "type": "LineAggregator",
+          "description": "Record formatter"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createWriter",
+          "returnType": "FlatFileItemWriter",
+          "parameters": [],
+          "description": "Build writer"
+        }
+      ]
+    },
+    {
+      "name": "SqsItemWriter",
+      "package": "com.gradle80.batch.item.writer",
+      "type": "writer",
+      "description": "Item writer for AWS SQS output",
+      "dependencies": ["AmazonSQS", "ObjectMapper"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "AWS client"
+        },
+        {
+          "name": "queueUrl",
+          "type": "String",
+          "description": "Queue endpoint"
+        },
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON converter"
+        }
+      ],
+      "methods": [
+        {
+          "name": "write",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "items",
+              "type": "List<Object>"
+            }
+          ],
+          "description": "Send messages"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobExecutionRepository",
+      "package": "com.gradle80.batch.repository",
+      "type": "repository",
+      "description": "Repository for batch job execution tracking",
+      "dependencies": ["JdbcTemplate"],
+      "fields": [
+        {
+          "name": "jdbcTemplate",
+          "type": "JdbcTemplate",
+          "description": "JDBC executor"
+        }
+      ],
+      "methods": [
+        {
+          "name": "saveJobExecution",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "jobExecution",
+              "type": "JobExecution"
+            }
+          ],
+          "description": "Save execution"
+        },
+        {
+          "name": "findJobExecutions",
+          "returnType": "List<JobExecution>",
+          "parameters": [
+            {
+              "name": "jobName",
+              "type": "String"
+            }
+          ],
+          "description": "Find executions"
+        }
+      ]
+    },
+    {
+      "name": "DataProcessingJob",
+      "package": "com.gradle80.batch.job",
+      "type": "job",
+      "description": "Definition for data processing batch job",
+      "dependencies": ["JobBuilderFactory", "StepBuilderFactory", "DataProcessingItemReader", "DataProcessingItemProcessor", "DatabaseItemWriter"],
+      "fields": [
+        {
+          "name": "jobBuilderFactory",
+          "type": "JobBuilderFactory",
+          "description": "Job factory"
+        },
+        {
+          "name": "stepBuilderFactory",
+          "type": "StepBuilderFactory",
+          "description": "Step factory"
+        },
+        {
+          "name": "itemReader",
+          "type": "DataProcessingItemReader",
+          "description": "Data reader"
+        },
+        {
+          "name": "itemProcessor",
+          "type": "DataProcessingItemProcessor",
+          "description": "Data processor"
+        },
+        {
+          "name": "itemWriter",
+          "type": "DatabaseItemWriter",
+          "description": "Data writer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "dataProcessingJob",
+          "returnType": "Job",
+          "parameters": [],
+          "description": "Create job"
+        },
+        {
+          "name": "processDataStep",
+          "returnType": "Step",
+          "parameters": [],
+          "description": "Processing step"
+        }
+      ]
+    },
+    {
+      "name": "ReportGenerationJob",
+      "package": "com.gradle80.batch.job",
+      "type": "job",
+      "description": "Definition for report generation batch job",
+      "dependencies": ["JobBuilderFactory", "StepBuilderFactory", "JdbcItemReader", "ValidationItemProcessor", "FileItemWriter"],
+      "fields": [
+        {
+          "name": "jobBuilderFactory",
+          "type": "JobBuilderFactory",
+          "description": "Job factory"
+        },
+        {
+          "name": "stepBuilderFactory",
+          "type": "StepBuilderFactory",
+          "description": "Step factory"
+        },
+        {
+          "name": "itemReader",
+          "type": "JdbcItemReader",
+          "description": "Report reader"
+        },
+        {
+          "name": "itemProcessor",
+          "type": "ValidationItemProcessor",
+          "description": "Report processor"
+        },
+        {
+          "name": "itemWriter",
+          "type": "FileItemWriter",
+          "description": "Report writer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "reportGenerationJob",
+          "returnType": "Job",
+          "parameters": [],
+          "description": "Create job"
+        },
+        {
+          "name": "generateReportStep",
+          "returnType": "Step",
+          "parameters": [],
+          "description": "Reporting step"
+        }
+      ]
+    },
+    {
+      "name": "NotificationJob",
+      "package": "com.gradle80.batch.job",
+      "type": "job",
+      "description": "Definition for notification batch job",
+      "dependencies": ["JobBuilderFactory", "StepBuilderFactory", "JdbcItemReader", "CompositeItemProcessor", "SqsItemWriter"],
+      "fields": [
+        {
+          "name": "jobBuilderFactory",
+          "type": "JobBuilderFactory",
+          "description": "Job factory"
+        },
+        {
+          "name": "stepBuilderFactory",
+          "type": "StepBuilderFactory",
+          "description": "Step factory"
+        },
+        {
+          "name": "itemReader",
+          "type": "JdbcItemReader",
+          "description": "Data reader"
+        },
+        {
+          "name": "itemProcessor",
+          "type": "CompositeItemProcessor",
+          "description": "Data processor"
+        },
+        {
+          "name": "itemWriter",
+          "type": "SqsItemWriter",
+          "description": "Message writer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "notificationJob",
+          "returnType": "Job",
+          "parameters": [],
+          "description": "Create job"
+        },
+        {
+          "name": "sendNotificationStep",
+          "returnType": "Step",
+          "parameters": [],
+          "description": "Notification step"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobController",
+      "package": "com.gradle80.batch.controller",
+      "type": "controller",
+      "description": "REST controller for batch job management",
+      "dependencies": ["JobLauncher", "Job"],
+      "fields": [
+        {
+          "name": "jobLauncher",
+          "type": "JobLauncher",
+          "description": "Job launcher"
+        },
+        {
+          "name": "dataProcessingJob",
+          "type": "Job",
+          "description": "Processing job"
+        },
+        {
+          "name": "reportGenerationJob",
+          "type": "Job",
+          "description": "Reporting job"
+        }
+      ],
+      "methods": [
+        {
+          "name": "launchDataProcessingJob",
+          "returnType": "ResponseEntity",
+          "parameters": [
+            {
+              "name": "requestParams",
+              "type": "Map<String, String>"
+            }
+          ],
+          "description": "Start processing"
+        },
+        {
+          "name": "launchReportGenerationJob",
+          "returnType": "ResponseEntity",
+          "parameters": [
+            {
+              "name": "requestParams",
+              "type": "Map<String, String>"
+            }
+          ],
+          "description": "Start reporting"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobMonitor",
+      "package": "com.gradle80.batch.monitor",
+      "type": "service",
+      "description": "Service for monitoring batch jobs",
+      "dependencies": ["JobExplorer", "BatchJobExecutionRepository"],
+      "fields": [
+        {
+          "name": "jobExplorer",
+          "type": "JobExplorer",
+          "description": "Job explorer"
+        },
+        {
+          "name": "executionRepository",
+          "type": "BatchJobExecutionRepository",
+          "description": "Execution repository"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getRunningJobs",
+          "returnType": "List<JobExecution>",
+          "parameters": [],
+          "description": "Find running"
+        },
+        {
+          "name": "getJobExecutionStatus",
+          "returnType": "BatchStatus",
+          "parameters": [
+            {
+              "name": "executionId",
+              "type": "long"
+            }
+          ],
+          "description": "Check status"
+        }
+      ]
+    },
+    {
+      "name": "TransformationService",
+      "package": "com.gradle80.batch.service",
+      "type": "service",
+      "description": "Service for data transformation in batch jobs",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "transformData",
+          "returnType": "Object",
+          "parameters": [
+            {
+              "name": "input",
+              "type": "Object"
+            }
+          ],
+          "description": "Transform data"
+        }
+      ]
+    },
+    {
+      "name": "BatchProperties",
+      "package": "com.gradle80.batch.config",
+      "type": "configuration",
+      "description": "Configuration properties for batch jobs",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "chunkSize",
+          "type": "int",
+          "description": "Processing size"
+        },
+        {
+          "name": "maxThreads",
+          "type": "int",
+          "description": "Thread limit"
+        },
+        {
+          "name": "scheduleEnabled",
+          "type": "boolean",
+          "description": "Enable scheduling"
+        },
+        {
+          "name": "scheduleExpression",
+          "type": "String",
+          "description": "Cron expression"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "BatchIntegrationTests",
+      "package": "com.gradle80.batch.test",
+      "type": "test",
+      "description": "Integration tests for batch jobs",
+      "dependencies": ["SpringBootTest", "TestNG", "JobLauncherTestUtils"],
+      "fields": [
+        {
+          "name": "jobLauncherTestUtils",
+          "type": "JobLauncherTestUtils",
+          "description": "Testing utility"
+        },
+        {
+          "name": "dataProcessingJob",
+          "type": "Job",
+          "description": "Test job"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testDataProcessingJob",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test processing"
+        },
+        {
+          "name": "testReportGenerationJob",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test reporting"
+        }
+      ]
+    },
+    {
+      "name": "BatchUnitTests",
+      "package": "com.gradle80.batch.test",
+      "type": "test",
+      "description": "Unit tests for batch components",
+      "dependencies": ["JUnit", "Mockito"],
+      "fields": [
+        {
+          "name": "dataProcessingItemReader",
+          "type": "DataProcessingItemReader",
+          "description": "Mock reader"
+        },
+        {
+          "name": "dataProcessingItemProcessor",
+          "type": "DataProcessingItemProcessor",
+          "description": "Mock processor"
+        },
+        {
+          "name": "databaseItemWriter",
+          "type": "DatabaseItemWriter",
+          "description": "Mock writer"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testItemReaderReadsCorrectly",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test reading"
+        },
+        {
+          "name": "testItemProcessorTransformsCorrectly",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test processing"
+        },
+        {
+          "name": "testItemWriterWritesCorrectly",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test writing"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "batch/build.gradle",
+      "description": "Build file for the batch module"
+    },
+    {
+      "path": "batch/src/main/resources/application-batch.yml",
+      "description": "Configuration properties for the batch module"
+    },
+    {
+      "path": "batch/src/main/resources/schema-batch.sql",
+      "description": "SQL schema initialization script for Spring Batch tables"
+    }
+  ],
+  "generationOrder": [
+    "BatchProperties", 
+    "BatchConfig", 
+    "BatchJobCompletionListener", 
+    "BatchJobParametersBuilder", 
+    "DataProcessingItemReader", 
+    "FileItemReader",
+    "JdbcItemReader",
+    "DataProcessingItemProcessor",
+    "ValidationItemProcessor", 
+    "CompositeItemProcessor", 
+    "DatabaseItemWriter", 
+    "FileItemWriter", 
+    "SqsItemWriter", 
+    "BatchJobExecutionRepository",
+    "TransformationService",
+    "DataProcessingJob", 
+    "ReportGenerationJob", 
+    "NotificationJob", 
+    "BatchScheduler", 
+    "BatchJobController", 
+    "BatchJobMonitor", 
+    "BatchIntegrationTests", 
+    "BatchUnitTests"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "project": "gradle80",
+  "build_system": "gradle",
+  "multi_module": true,
+  "total_files": 200,
+  "description": "A medium-complexity multi-module Spring Boot application using Java 8, integrating with AWS messaging services (SNS and SQS), with comprehensive testing using TestNG and JUnit. The application provides a scalable microservice architecture for message processing and handling.",
+  "modules": [
+    {
+      "name": "parent",
+      "blueprint_file": "blueprint-parent.json",
+      "module_path": "",
+      "file_count": 5,
+      "path": "",
+      "description": "Parent module containing the root build configuration, dependency management, and project-wide settings. Handles the overall build process and module coordination."
+    },
+    {
+      "name": "common",
+      "blueprint_file": "blueprint-common.json",
+      "module_path": "common",
+      "file_count": 22,
+      "path": "common",
+      "description": "Common utilities, shared models, and core components used across all modules. Includes base exception classes, common DTOs, utility functions, and shared configurations."
+    },
+    {
+      "name": "api",
+      "blueprint_file": "blueprint-api.json",
+      "module_path": "api",
+      "file_count": 25,
+      "path": "api",
+      "description": "API definitions and interfaces that define the service contracts. Contains API models, request/response objects, service interfaces, and API documentation using SpringFox/Swagger."
+    },
+    {
+      "name": "data",
+      "blueprint_file": "blueprint-data.json",
+      "module_path": "data",
+      "file_count": 25,
+      "path": "data",
+      "description": "Data access layer with repositories, entities, and database configurations. Handles persistence, ORM mappings, and database interactions."
+    },
+    {
+      "name": "service",
+      "blueprint_file": "blueprint-service.json",
+      "module_path": "service",
+      "file_count": 25,
+      "path": "service",
+      "description": "Core business logic and service implementations. Contains the main service classes implementing business rules and application logic."
+    },
+    {
+      "name": "aws-integration",
+      "blueprint_file": "blueprint-aws-integration.json",
+      "module_path": "aws-integration",
+      "file_count": 25,
+      "path": "aws-integration",
+      "description": "Integration with AWS services (SNS and SQS). Handles message publishing, subscription, queue management, and related configurations for AWS messaging services."
+    },
+    {
+      "name": "web",
+      "blueprint_file": "blueprint-web.json",
+      "module_path": "web",
+      "file_count": 25,
+      "path": "web",
+      "description": "Web layer with REST controllers, request handlers, and web configurations. Exposes the API endpoints and handles HTTP requests/responses."
+    },
+    {
+      "name": "batch",
+      "blueprint_file": "blueprint-batch.json",
+      "module_path": "batch",
+      "file_count": 24,
+      "path": "batch",
+      "description": "Batch processing capabilities using Spring Batch. Includes job configurations, item processors, readers, writers, and batch scheduling."
+    },
+    {
+      "name": "integration-tests",
+      "blueprint_file": "blueprint-integration-tests.json",
+      "module_path": "integration-tests",
+      "file_count": 24,
+      "path": "integration-tests",
+      "description": "Integration testing module with TestNG and JUnit tests. Contains comprehensive tests that verify the integration between different components and modules."
+    }
+  ],
+  "generation_order": ["parent", "common", "api", "data", "service", "aws-integration", "web", "batch", "integration-tests"]
+}

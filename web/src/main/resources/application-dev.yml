@@ -1,0 +1,197 @@
+# Development Environment Configuration for gradle80 Web Module
+# This configuration file contains development-specific properties
+# Last updated: 2023-10-15
+
+# Server configuration
+server:
+  port: 8080
+  error:
+    include-stacktrace: always
+    include-message: always
+  compression:
+    enabled: true
+  servlet:
+    context-path: /api
+  tomcat:
+    max-threads: 50
+    min-spare-threads: 10
+    accesslog:
+      enabled: true
+      pattern: '%t %a "%r" %s %b %D ms'
+      directory: logs
+      prefix: access_log
+      suffix: .log
+
+# Spring configuration
+spring:
+  profiles: dev
+  application:
+    name: gradle80-web-dev
+  
+  # Database configuration - using H2 for development
+  datasource:
+    url: jdbc:h2:mem:devdb
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: true
+  
+  # Cache configuration
+  cache:
+    type: simple
+  
+  # Development-specific Jackson settings
+  jackson:
+    serialization:
+      indent-output: true
+      WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: false
+    default-property-inclusion: non_null
+
+  # Development specific MVC settings
+  mvc:
+    log-request-details: true
+    throw-exception-if-no-handler-found: true
+    pathmatch:
+      matching-strategy: ant_path_matcher  # For Swagger compatibility
+
+# Security configuration
+security:
+  jwt:
+    token:
+      secret-key: development-jwt-secret-key-for-local-testing-only
+      expire-length: 86400000  # 24 hours in milliseconds for development
+  allowed-origins: "*"
+  public-urls: >
+    /api/auth/**,
+    /api/public/**,
+    /swagger-ui/**,
+    /v3/api-docs/**,
+    /v2/api-docs/**,
+    /swagger-resources/**,
+    /h2-console/**,
+    /actuator/**
+
+# AWS configuration for development (using localstack)
+aws:
+  region: us-east-1
+  endpoint:
+    override: true
+    url: http://localhost:4566
+  credentials:
+    access-key: test
+    secret-key: test
+  sns:
+    enabled: true
+    topic-arns:
+      notification: arn:aws:sns:us-east-1:000000000000:notification-topic-dev
+      user-event: arn:aws:sns:us-east-1:000000000000:user-event-topic-dev
+      order-event: arn:aws:sns:us-east-1:000000000000:order-event-topic-dev
+      product-event: arn:aws:sns:us-east-1:000000000000:product-event-topic-dev
+  sqs:
+    enabled: true
+    queues:
+      notification-queue: http://localhost:4566/000000000000/notification-queue-dev
+      processing-queue: http://localhost:4566/000000000000/processing-queue-dev
+      user-event-queue: http://localhost:4566/000000000000/user-event-queue-dev
+      order-event-queue: http://localhost:4566/000000000000/order-event-queue-dev
+
+# API documentation
+springfox:
+  documentation:
+    swagger:
+      v2:
+        path: /v2/api-docs
+    swagger-ui:
+      base-url: /swagger-ui
+      enabled: true
+      display-request-duration: true
+      operations-sorter: alpha
+
+# Custom application properties for development
+app:
+  api:
+    version: 1.0.0-DEV
+    title: Gradle80 API (Development)
+    description: Development version of the Gradle80 REST API
+  rate-limiting:
+    enabled: false  # Disabled for development
+    limit: 1000
+    reset-period-seconds: 60
+  request-context:
+    enabled: true
+    include-user-details: true
+  logging:
+    request:
+      enabled: true
+      include-headers: true
+      include-payload: true
+      max-payload-length: 10000  # Larger for development
+    response:
+      enabled: true
+      include-headers: true
+      include-payload: true
+      max-payload-length: 10000  # Larger for development
+  feature-flags:
+    enable-experimental-apis: true
+    use-mock-services: true
+    enhanced-logging: true
+    test-mode: true
+
+# Management endpoints (more exposed in development)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  info:
+    git:
+      mode: full
+  health:
+    defaults:
+      enabled: true
+
+# Logging configuration for development
+logging:
+  level:
+    root: INFO
+    com.gradle80: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.cache: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr([%X{trace_id},%X{span_id}]){yellow} %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/gradle80-web-dev.log
+    max-size: 50MB
+    max-history: 10
+    total-size-cap: 500MB
+
+# Development debugging options
+debug: true
+
+# TODO: Add connection to other microservices when they're available
+# TODO: Configure development test data loader
+# FIXME: Update AWS settings when LocalStack is configured
+# FIXME: Review security settings for development

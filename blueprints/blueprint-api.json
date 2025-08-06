@@ -1,0 +1,947 @@
+{
+  "module": "api",
+  "description": "API definitions defining service contracts with models, request/response objects, and Swagger documentation.",
+  "file_count": 25,
+  "module_path": "api",
+  "interfaces": {
+    "UserService": "Interface for user management operations",
+    "ProductService": "Interface for product management operations",
+    "OrderService": "Interface for order processing operations",
+    "NotificationService": "Interface for sending notifications",
+    "AuthenticationService": "Interface for user authentication operations",
+    "SearchService": "Interface for search operations"
+  },
+  "dependencies": {
+    "internal": ["common"],
+    "external": [
+      "spring-boot-starter-web",
+      "springfox-swagger2",
+      "springfox-swagger-ui",
+      "lombok",
+      "javax.validation:validation-api",
+      "com.fasterxml.jackson.core:jackson-databind"
+    ]
+  },
+  "classes": [
+    {
+      "name": "ApiRequest",
+      "package": "com.gradle80.api.model",
+      "type": "model",
+      "description": "Base class for all API request objects",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "requestId",
+          "type": "String",
+          "description": "Unique identifier"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Request timestamp"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "ApiResponse",
+      "package": "com.gradle80.api.model",
+      "type": "model",
+      "description": "Base class for all API response objects",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "success",
+          "type": "boolean",
+          "description": "Success indicator"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "description": "Response message"
+        },
+        {
+          "name": "timestamp",
+          "type": "Long",
+          "description": "Response timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserDto",
+      "package": "com.gradle80.api.dto",
+      "type": "model",
+      "description": "Data transfer object for user information",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "username",
+          "type": "String",
+          "description": "User name"
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "description": "Email address"
+        },
+        {
+          "name": "firstName",
+          "type": "String",
+          "description": "First name"
+        },
+        {
+          "name": "lastName",
+          "type": "String",
+          "description": "Last name"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "description": "Account status"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "User creation/update request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "username",
+          "type": "String",
+          "description": "User name"
+        },
+        {
+          "name": "email",
+          "type": "String",
+          "description": "Email address"
+        },
+        {
+          "name": "firstName",
+          "type": "String",
+          "description": "First name"
+        },
+        {
+          "name": "lastName",
+          "type": "String",
+          "description": "Last name"
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "description": "User password"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "UserResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "User operation response",
+      "dependencies": ["ApiResponse", "UserDto"],
+      "fields": [
+        {
+          "name": "user",
+          "type": "UserDto",
+          "description": "User data"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "ProductDto",
+      "package": "com.gradle80.api.dto",
+      "type": "model",
+      "description": "Data transfer object for product information",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Product identifier"
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "description": "Product name"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "Product description"
+        },
+        {
+          "name": "price",
+          "type": "BigDecimal",
+          "description": "Product price"
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "description": "Product category"
+        },
+        {
+          "name": "available",
+          "type": "boolean",
+          "description": "Availability status"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "ProductRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "Product creation/update request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "name",
+          "type": "String",
+          "description": "Product name"
+        },
+        {
+          "name": "description",
+          "type": "String",
+          "description": "Product description"
+        },
+        {
+          "name": "price",
+          "type": "BigDecimal",
+          "description": "Product price"
+        },
+        {
+          "name": "category",
+          "type": "String",
+          "description": "Product category"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "ProductResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Product operation response",
+      "dependencies": ["ApiResponse", "ProductDto"],
+      "fields": [
+        {
+          "name": "product",
+          "type": "ProductDto",
+          "description": "Product data"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "OrderDto",
+      "package": "com.gradle80.api.dto",
+      "type": "model",
+      "description": "Data transfer object for order information",
+      "dependencies": ["ProductDto"],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Order identifier"
+        },
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "products",
+          "type": "List<ProductDto>",
+          "description": "Ordered products"
+        },
+        {
+          "name": "totalAmount",
+          "type": "BigDecimal",
+          "description": "Total amount"
+        },
+        {
+          "name": "status",
+          "type": "String",
+          "description": "Order status"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "OrderRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "Order creation request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "productIds",
+          "type": "List<Long>",
+          "description": "Product identifiers"
+        },
+        {
+          "name": "shippingAddress",
+          "type": "String",
+          "description": "Shipping address"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "OrderResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Order operation response",
+      "dependencies": ["ApiResponse", "OrderDto"],
+      "fields": [
+        {
+          "name": "order",
+          "type": "OrderDto",
+          "description": "Order data"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "NotificationDto",
+      "package": "com.gradle80.api.dto",
+      "type": "model",
+      "description": "Data transfer object for notification information",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "id",
+          "type": "Long",
+          "description": "Notification identifier"
+        },
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "description": "Notification type"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "description": "Notification message"
+        },
+        {
+          "name": "read",
+          "type": "boolean",
+          "description": "Read status"
+        },
+        {
+          "name": "createdAt",
+          "type": "Date",
+          "description": "Creation timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "NotificationRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "Notification creation request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "userId",
+          "type": "Long",
+          "description": "User identifier"
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "description": "Notification type"
+        },
+        {
+          "name": "message",
+          "type": "String",
+          "description": "Notification message"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "NotificationResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Notification operation response",
+      "dependencies": ["ApiResponse", "NotificationDto"],
+      "fields": [
+        {
+          "name": "notification",
+          "type": "NotificationDto",
+          "description": "Notification data"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "AuthenticationRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "Authentication request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "username",
+          "type": "String",
+          "description": "User name"
+        },
+        {
+          "name": "password",
+          "type": "String",
+          "description": "User password"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "AuthenticationResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Authentication response",
+      "dependencies": ["ApiResponse"],
+      "fields": [
+        {
+          "name": "token",
+          "type": "String",
+          "description": "Authentication token"
+        },
+        {
+          "name": "expiresAt",
+          "type": "Long",
+          "description": "Expiration timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "SearchRequest",
+      "package": "com.gradle80.api.request",
+      "type": "model",
+      "description": "Search request",
+      "dependencies": ["ApiRequest"],
+      "fields": [
+        {
+          "name": "query",
+          "type": "String",
+          "description": "Search query"
+        },
+        {
+          "name": "categories",
+          "type": "List<String>",
+          "description": "Filter categories"
+        },
+        {
+          "name": "page",
+          "type": "Integer",
+          "description": "Page number"
+        },
+        {
+          "name": "size",
+          "type": "Integer",
+          "description": "Page size"
+        }
+      ],
+      "methods": [
+        {
+          "name": "validate",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Validates request"
+        }
+      ]
+    },
+    {
+      "name": "SearchResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Search response",
+      "dependencies": ["ApiResponse", "ProductDto"],
+      "fields": [
+        {
+          "name": "results",
+          "type": "List<ProductDto>",
+          "description": "Search results"
+        },
+        {
+          "name": "totalHits",
+          "type": "Long",
+          "description": "Total hits"
+        },
+        {
+          "name": "totalPages",
+          "type": "Integer",
+          "description": "Total pages"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "ErrorResponse",
+      "package": "com.gradle80.api.response",
+      "type": "model",
+      "description": "Error response",
+      "dependencies": ["ApiResponse"],
+      "fields": [
+        {
+          "name": "errorCode",
+          "type": "String",
+          "description": "Error code"
+        },
+        {
+          "name": "details",
+          "type": "List<String>",
+          "description": "Error details"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "User management service interface",
+      "dependencies": ["UserDto", "UserRequest", "UserResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "getUserById",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves user"
+        },
+        {
+          "name": "createUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Creates user"
+        },
+        {
+          "name": "updateUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "UserRequest"
+            }
+          ],
+          "description": "Updates user"
+        },
+        {
+          "name": "deleteUser",
+          "returnType": "UserResponse",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Deletes user"
+        }
+      ]
+    },
+    {
+      "name": "ProductService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "Product management service interface",
+      "dependencies": ["ProductDto", "ProductRequest", "ProductResponse", "SearchRequest", "SearchResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "getProductById",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves product"
+        },
+        {
+          "name": "createProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Creates product"
+        },
+        {
+          "name": "updateProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            },
+            {
+              "name": "request",
+              "type": "ProductRequest"
+            }
+          ],
+          "description": "Updates product"
+        },
+        {
+          "name": "deleteProduct",
+          "returnType": "ProductResponse",
+          "parameters": [
+            {
+              "name": "productId",
+              "type": "Long"
+            }
+          ],
+          "description": "Deletes product"
+        },
+        {
+          "name": "searchProducts",
+          "returnType": "SearchResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Searches products"
+        }
+      ]
+    },
+    {
+      "name": "OrderService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "Order processing service interface",
+      "dependencies": ["OrderDto", "OrderRequest", "OrderResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "getOrderById",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Retrieves order"
+        },
+        {
+          "name": "createOrder",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "OrderRequest"
+            }
+          ],
+          "description": "Creates order"
+        },
+        {
+          "name": "cancelOrder",
+          "returnType": "OrderResponse",
+          "parameters": [
+            {
+              "name": "orderId",
+              "type": "Long"
+            }
+          ],
+          "description": "Cancels order"
+        },
+        {
+          "name": "getUserOrders",
+          "returnType": "List<OrderResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Lists orders"
+        }
+      ]
+    },
+    {
+      "name": "NotificationService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "Notification service interface",
+      "dependencies": ["NotificationDto", "NotificationRequest", "NotificationResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "sendNotification",
+          "returnType": "NotificationResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "NotificationRequest"
+            }
+          ],
+          "description": "Sends notification"
+        },
+        {
+          "name": "getUserNotifications",
+          "returnType": "List<NotificationResponse>",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Lists notifications"
+        },
+        {
+          "name": "markAsRead",
+          "returnType": "NotificationResponse",
+          "parameters": [
+            {
+              "name": "notificationId",
+              "type": "Long"
+            }
+          ],
+          "description": "Updates status"
+        }
+      ]
+    },
+    {
+      "name": "AuthenticationService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "Authentication service interface",
+      "dependencies": ["AuthenticationRequest", "AuthenticationResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "authenticate",
+          "returnType": "AuthenticationResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "AuthenticationRequest"
+            }
+          ],
+          "description": "Authenticates user"
+        },
+        {
+          "name": "validateToken",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Validates token"
+        },
+        {
+          "name": "refreshToken",
+          "returnType": "AuthenticationResponse",
+          "parameters": [
+            {
+              "name": "token",
+              "type": "String"
+            }
+          ],
+          "description": "Refreshes token"
+        }
+      ]
+    },
+    {
+      "name": "SearchService",
+      "package": "com.gradle80.api.service",
+      "type": "interface",
+      "description": "Search service interface",
+      "dependencies": ["SearchRequest", "SearchResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "search",
+          "returnType": "SearchResponse",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "SearchRequest"
+            }
+          ],
+          "description": "Performs search"
+        },
+        {
+          "name": "getCategories",
+          "returnType": "List<String>",
+          "parameters": [],
+          "description": "Lists categories"
+        }
+      ]
+    },
+    {
+      "name": "SwaggerConfig",
+      "package": "com.gradle80.api.config",
+      "type": "config",
+      "description": "Swagger configuration for API documentation",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "api",
+          "returnType": "Docket",
+          "parameters": [],
+          "description": "API documentation"
+        },
+        {
+          "name": "apiInfo",
+          "returnType": "ApiInfo",
+          "parameters": [],
+          "description": "API information"
+        }
+      ]
+    },
+    {
+      "name": "ApiValidationAspect",
+      "package": "com.gradle80.api.aspect",
+      "type": "aspect",
+      "description": "Aspect for API request validation",
+      "dependencies": ["ApiRequest", "ErrorResponse"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "validateRequest",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "joinPoint",
+              "type": "JoinPoint"
+            }
+          ],
+          "description": "Validates requests"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "api/build.gradle",
+      "description": "Build file for the api module"
+    },
+    {
+      "path": "api/src/main/resources/swagger.properties",
+      "description": "Swagger configuration properties"
+    }
+  ],
+  "generationOrder": [
+    "ApiRequest", 
+    "ApiResponse", 
+    "UserDto", 
+    "ProductDto", 
+    "OrderDto", 
+    "NotificationDto", 
+    "UserRequest", 
+    "UserResponse", 
+    "ProductRequest", 
+    "ProductResponse", 
+    "OrderRequest", 
+    "OrderResponse", 
+    "NotificationRequest", 
+    "NotificationResponse", 
+    "AuthenticationRequest", 
+    "AuthenticationResponse", 
+    "SearchRequest", 
+    "SearchResponse", 
+    "ErrorResponse", 
+    "UserService", 
+    "ProductService", 
+    "OrderService", 
+    "NotificationService", 
+    "AuthenticationService", 
+    "SearchService", 
+    "SwaggerConfig", 
+    "ApiValidationAspect"
+  ]
+}

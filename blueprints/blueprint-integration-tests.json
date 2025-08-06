@@ -1,0 +1,709 @@
+{
+  "module": "integration-tests",
+  "description": "Integration testing module with TestNG and JUnit tests that verify component interactions",
+  "file_count": 24,
+  "module_path": "integration-tests",
+  "interfaces": {
+    "TestDataProvider": "Provides test data for integration tests",
+    "TestEnvironmentSetup": "Handles test environment configuration and teardown"
+  },
+  "dependencies": {
+    "internal": ["common", "api", "data", "service", "aws-integration", "web", "batch"],
+    "external": ["spring-boot-test", "spring-test", "testng", "junit", "mockito", "aws-java-sdk", "lombok"]
+  },
+  "classes": [
+    {
+      "name": "BaseIntegrationTest",
+      "package": "com.gradle80.test",
+      "type": "test-base",
+      "description": "Base class for all integration tests with common setup and utilities",
+      "dependencies": ["TestEnvironmentSetup", "TestConfig"],
+      "fields": [
+        {
+          "name": "testEnvironment",
+          "type": "TestEnvironmentSetup",
+          "description": "Test environment"
+        },
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test initialization"
+        },
+        {
+          "name": "tearDown",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test cleanup"
+        }
+      ]
+    },
+    {
+      "name": "TestConfig",
+      "package": "com.gradle80.test.config",
+      "type": "configuration",
+      "description": "Spring configuration for test contexts",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "testDataSource",
+          "returnType": "DataSource",
+          "parameters": [],
+          "description": "Test database"
+        },
+        {
+          "name": "testObjectMapper",
+          "returnType": "ObjectMapper",
+          "parameters": [],
+          "description": "JSON serializer"
+        }
+      ]
+    },
+    {
+      "name": "TestEnvironmentSetupImpl",
+      "package": "com.gradle80.test.environment",
+      "type": "test-utility",
+      "description": "Implementation of test environment setup and teardown",
+      "dependencies": ["TestEnvironmentSetup"],
+      "fields": [
+        {
+          "name": "testProperties",
+          "type": "Properties",
+          "description": "Test properties"
+        }
+      ],
+      "methods": [
+        {
+          "name": "initializeEnvironment",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Environment setup"
+        },
+        {
+          "name": "cleanupEnvironment",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Environment cleanup"
+        }
+      ]
+    },
+    {
+      "name": "TestDataProviderImpl",
+      "package": "com.gradle80.test.data",
+      "type": "test-utility",
+      "description": "Implementation of test data provider",
+      "dependencies": ["TestDataProvider"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "createTestUser",
+          "returnType": "User",
+          "parameters": [
+            {
+              "name": "username",
+              "type": "String"
+            }
+          ],
+          "description": "User creation"
+        },
+        {
+          "name": "createTestOrder",
+          "returnType": "Order",
+          "parameters": [
+            {
+              "name": "userId",
+              "type": "Long"
+            }
+          ],
+          "description": "Order creation"
+        }
+      ]
+    },
+    {
+      "name": "ApiIntegrationTest",
+      "package": "com.gradle80.test.api",
+      "type": "test",
+      "description": "Integration tests for API module",
+      "dependencies": ["BaseIntegrationTest", "MockMvc"],
+      "fields": [
+        {
+          "name": "mockMvc",
+          "type": "MockMvc",
+          "description": "MVC tester"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testUserEndpoint",
+          "returnType": "void",
+          "parameters": [],
+          "description": "User API"
+        },
+        {
+          "name": "testOrderEndpoint",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Order API"
+        }
+      ]
+    },
+    {
+      "name": "ServiceIntegrationTest",
+      "package": "com.gradle80.test.service",
+      "type": "test",
+      "description": "Integration tests for service module",
+      "dependencies": ["BaseIntegrationTest", "TestDataProvider"],
+      "fields": [
+        {
+          "name": "userService",
+          "type": "UserService",
+          "description": "User service"
+        },
+        {
+          "name": "orderService",
+          "type": "OrderService",
+          "description": "Order service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testUserCreation",
+          "returnType": "void",
+          "parameters": [],
+          "description": "User creation"
+        },
+        {
+          "name": "testOrderProcessing",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Order processing"
+        }
+      ]
+    },
+    {
+      "name": "DataRepositoryIntegrationTest",
+      "package": "com.gradle80.test.data",
+      "type": "test",
+      "description": "Integration tests for repositories",
+      "dependencies": ["BaseIntegrationTest", "TestDataProvider"],
+      "fields": [
+        {
+          "name": "userRepository",
+          "type": "UserRepository",
+          "description": "User repository"
+        },
+        {
+          "name": "orderRepository",
+          "type": "OrderRepository",
+          "description": "Order repository"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testUserPersistence",
+          "returnType": "void",
+          "parameters": [],
+          "description": "User persistence"
+        },
+        {
+          "name": "testOrderQueries",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Order queries"
+        }
+      ]
+    },
+    {
+      "name": "AwsSnsIntegrationTest",
+      "package": "com.gradle80.test.aws",
+      "type": "test",
+      "description": "Integration tests for AWS SNS",
+      "dependencies": ["BaseIntegrationTest", "AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "SNS client"
+        },
+        {
+          "name": "notificationService",
+          "type": "NotificationService",
+          "description": "Notification service"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testPublishMessage",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Message publishing"
+        },
+        {
+          "name": "testNotificationDelivery",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Notification delivery"
+        }
+      ]
+    },
+    {
+      "name": "AwsSqsIntegrationTest",
+      "package": "com.gradle80.test.aws",
+      "type": "test",
+      "description": "Integration tests for AWS SQS",
+      "dependencies": ["BaseIntegrationTest", "AmazonSQS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS client"
+        },
+        {
+          "name": "messageProcessor",
+          "type": "MessageProcessor",
+          "description": "Message processor"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testMessageQueuing",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Message queuing"
+        },
+        {
+          "name": "testMessageProcessing",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Message processing"
+        }
+      ]
+    },
+    {
+      "name": "WebControllerIntegrationTest",
+      "package": "com.gradle80.test.web",
+      "type": "test",
+      "description": "Integration tests for web controllers",
+      "dependencies": ["BaseIntegrationTest", "TestRestTemplate"],
+      "fields": [
+        {
+          "name": "restTemplate",
+          "type": "TestRestTemplate",
+          "description": "REST client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testGetEndpoints",
+          "returnType": "void",
+          "parameters": [],
+          "description": "GET endpoints"
+        },
+        {
+          "name": "testPostEndpoints",
+          "returnType": "void",
+          "parameters": [],
+          "description": "POST endpoints"
+        }
+      ]
+    },
+    {
+      "name": "BatchJobIntegrationTest",
+      "package": "com.gradle80.test.batch",
+      "type": "test",
+      "description": "Integration tests for batch jobs",
+      "dependencies": ["BaseIntegrationTest", "JobLauncher"],
+      "fields": [
+        {
+          "name": "jobLauncher",
+          "type": "JobLauncher",
+          "description": "Job launcher"
+        },
+        {
+          "name": "importJob",
+          "type": "Job",
+          "description": "Import job"
+        }
+      ],
+      "methods": [
+        {
+          "name": "testJobExecution",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Job execution"
+        },
+        {
+          "name": "testJobCompletion",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Job completion"
+        }
+      ]
+    },
+    {
+      "name": "EndToEndIntegrationTest",
+      "package": "com.gradle80.test.e2e",
+      "type": "test",
+      "description": "End-to-end integration tests",
+      "dependencies": ["BaseIntegrationTest", "TestDataProvider"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "testFullUserJourney",
+          "returnType": "void",
+          "parameters": [],
+          "description": "User journey"
+        },
+        {
+          "name": "testOrderProcessingFlow",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Order flow"
+        }
+      ]
+    },
+    {
+      "name": "IntegrationTestSuite",
+      "package": "com.gradle80.test.suite",
+      "type": "test-suite",
+      "description": "TestNG test suite for all integration tests",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "setupTestSuite",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Suite setup"
+        },
+        {
+          "name": "cleanupTestSuite",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Suite cleanup"
+        }
+      ]
+    },
+    {
+      "name": "MockConfigurationTest",
+      "package": "com.gradle80.test.config",
+      "type": "test-utility",
+      "description": "Tests for mock configurations",
+      "dependencies": ["BaseIntegrationTest"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "testMockServices",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Mock services"
+        },
+        {
+          "name": "testMockRepositories",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Mock repositories"
+        }
+      ]
+    },
+    {
+      "name": "TestUtils",
+      "package": "com.gradle80.test.utils",
+      "type": "utility",
+      "description": "Utility methods for testing",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "createRandomData",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "length",
+              "type": "int"
+            }
+          ],
+          "description": "Random generation"
+        },
+        {
+          "name": "compareResults",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "expected",
+              "type": "Object"
+            },
+            {
+              "name": "actual",
+              "type": "Object"
+            }
+          ],
+          "description": "Result comparison"
+        }
+      ]
+    },
+    {
+      "name": "IntegrationTestListener",
+      "package": "com.gradle80.test.listeners",
+      "type": "test-utility",
+      "description": "TestNG and JUnit test listeners",
+      "dependencies": ["ITestListener", "TestWatcher"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "onTestStart",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "ITestResult"
+            }
+          ],
+          "description": "Test start"
+        },
+        {
+          "name": "onTestFailure",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "ITestResult"
+            }
+          ],
+          "description": "Test failure"
+        }
+      ]
+    },
+    {
+      "name": "DatabaseTestHelper",
+      "package": "com.gradle80.test.helpers",
+      "type": "test-utility",
+      "description": "Database utilities for tests",
+      "dependencies": ["DataSource"],
+      "fields": [
+        {
+          "name": "dataSource",
+          "type": "DataSource",
+          "description": "Test datasource"
+        }
+      ],
+      "methods": [
+        {
+          "name": "cleanDatabase",
+          "returnType": "void",
+          "parameters": [],
+          "description": "DB cleanup"
+        },
+        {
+          "name": "loadTestData",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "scriptPath",
+              "type": "String"
+            }
+          ],
+          "description": "Data loading"
+        }
+      ]
+    },
+    {
+      "name": "HttpMockUtils",
+      "package": "com.gradle80.test.utils",
+      "type": "test-utility",
+      "description": "HTTP mocking utilities",
+      "dependencies": ["WireMock"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "setupMockEndpoint",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "String"
+            },
+            {
+              "name": "responseBody",
+              "type": "String"
+            }
+          ],
+          "description": "Mock setup"
+        },
+        {
+          "name": "verifyEndpointCalled",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "String"
+            },
+            {
+              "name": "times",
+              "type": "int"
+            }
+          ],
+          "description": "Call verification"
+        }
+      ]
+    },
+    {
+      "name": "AwsMockConfig",
+      "package": "com.gradle80.test.aws",
+      "type": "configuration",
+      "description": "AWS mock configuration",
+      "dependencies": ["AmazonSNS", "AmazonSQS"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "mockSnsClient",
+          "returnType": "AmazonSNS",
+          "parameters": [],
+          "description": "SNS mocking"
+        },
+        {
+          "name": "mockSqsClient",
+          "returnType": "AmazonSQS",
+          "parameters": [],
+          "description": "SQS mocking"
+        }
+      ]
+    },
+    {
+      "name": "TestSecurityConfig",
+      "package": "com.gradle80.test.config",
+      "type": "configuration",
+      "description": "Security configuration for tests",
+      "dependencies": ["WebSecurityConfigurerAdapter"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "configure",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "http",
+              "type": "HttpSecurity"
+            }
+          ],
+          "description": "Security setup"
+        },
+        {
+          "name": "testAuthenticationManager",
+          "returnType": "AuthenticationManager",
+          "parameters": [],
+          "description": "Auth manager"
+        }
+      ]
+    },
+    {
+      "name": "TestApplicationContextInitializer",
+      "package": "com.gradle80.test.context",
+      "type": "test-utility",
+      "description": "Application context initializer for tests",
+      "dependencies": ["ApplicationContextInitializer"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "initialize",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "ConfigurableApplicationContext"
+            }
+          ],
+          "description": "Context initialization"
+        }
+      ]
+    },
+    {
+      "name": "JUnitIntegrationTestSuite",
+      "package": "com.gradle80.test.junit",
+      "type": "test-suite",
+      "description": "JUnit test suite setup",
+      "dependencies": ["RunWith"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "setupJUnit",
+          "returnType": "void",
+          "parameters": [],
+          "description": "JUnit setup"
+        }
+      ]
+    },
+    {
+      "name": "TestNGIntegrationTestSuite",
+      "package": "com.gradle80.test.testng",
+      "type": "test-suite",
+      "description": "TestNG suite configuration",
+      "dependencies": ["ITestContext"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "setupTestNG",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "context",
+              "type": "ITestContext"
+            }
+          ],
+          "description": "TestNG setup"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "integration-tests/build.gradle",
+      "description": "Gradle build file for the integration-tests module"
+    },
+    {
+      "path": "integration-tests/src/test/resources/application-test.yml",
+      "description": "Test application configuration properties"
+    },
+    {
+      "path": "integration-tests/src/test/resources/testng.xml",
+      "description": "TestNG configuration file"
+    },
+    {
+      "path": "integration-tests/src/test/resources/logback-test.xml",
+      "description": "Test logging configuration"
+    }
+  ],
+  "generationOrder": [
+    "TestConfig",
+    "TestUtils",
+    "BaseIntegrationTest",
+    "TestEnvironmentSetupImpl",
+    "TestDataProviderImpl",
+    "DatabaseTestHelper",
+    "HttpMockUtils",
+    "AwsMockConfig",
+    "TestSecurityConfig",
+    "TestApplicationContextInitializer",
+    "IntegrationTestListener",
+    "ApiIntegrationTest",
+    "ServiceIntegrationTest",
+    "DataRepositoryIntegrationTest",
+    "WebControllerIntegrationTest",
+    "AwsSnsIntegrationTest",
+    "AwsSqsIntegrationTest",
+    "BatchJobIntegrationTest",
+    "EndToEndIntegrationTest",
+    "MockConfigurationTest",
+    "IntegrationTestSuite",
+    "JUnitIntegrationTestSuite",
+    "TestNGIntegrationTestSuite"
+  ]
+}

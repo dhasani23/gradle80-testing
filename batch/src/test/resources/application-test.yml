@@ -1,0 +1,22 @@
+# Test configuration for batch jobs
+spring:
+  batch:
+    job:
+      # Disable job auto-execution for tests
+      enabled: false
+    # Use in-memory job repository for tests
+    initialize-schema: always
+  
+  # Use H2 in-memory database for tests
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+# Batch specific properties
+gradle80:
+  batch:
+    chunk-size: 10
+    max-threads: 4
+    schedule-enabled: false

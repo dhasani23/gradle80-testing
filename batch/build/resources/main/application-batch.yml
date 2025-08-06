@@ -1,0 +1,115 @@
+# Application configuration for Batch Module
+# Project: gradle80
+# Description: Configuration properties for the batch module
+
+spring:
+  application:
+    name: gradle80-batch
+  
+  batch:
+    # Initialize schema on startup
+    initialize-schema: always
+    # Table prefix for batch metadata tables
+    table-prefix: BATCH_
+    # Job repository configuration
+    job:
+      enabled: true
+      names: dataProcessingJob,reportGenerationJob,notificationJob
+    # Database initialization mode
+    jdbc:
+      initialize-schema: always
+    
+  # Datasource configuration for batch job repository
+  datasource:
+    url: jdbc:h2:mem:batchdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    
+  # Task execution configuration
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 10
+        queue-capacity: 25
+    scheduling:
+      pool:
+        size: 3
+
+# Batch module specific properties
+batch:
+  processing:
+    chunk-size: 100
+    max-threads: 4
+    schedule-enabled: true
+    schedule-expression: "0 0 1 * * ?" # Daily at 1 AM
+  
+  # Job-specific configurations
+  jobs:
+    data-processing:
+      enabled: true
+      input-directory: /data/input
+      output-directory: /data/output
+      max-attempts: 3
+    
+    report-generation:
+      enabled: true
+      report-types: daily,weekly,monthly
+      report-directory: /reports
+      template-path: classpath:templates/report-template.xlsx
+    
+    notification:
+      enabled: true
+      notification-threshold: 100
+      error-notification-enabled: true
+
+# AWS integration configuration for batch jobs
+aws:
+  sqs:
+    # Queue URLs for batch processing
+    data-processing-queue: https://sqs.us-west-2.amazonaws.com/123456789012/data-processing-queue
+    notification-queue: https://sqs.us-west-2.amazonaws.com/123456789012/notification-queue
+    error-queue: https://sqs.us-west-2.amazonaws.com/123456789012/error-queue
+    # SQS configuration
+    visibility-timeout: 300
+    message-retention-period: 345600 # 4 days
+    
+  sns:
+    # Topic ARNs for notifications
+    job-completion-topic: arn:aws:sns:us-west-2:123456789012:job-completion-topic
+    job-failure-topic: arn:aws:sns:us-west-2:123456789012:job-failure-topic
+
+# File processing configuration
+file:
+  reader:
+    supported-formats: csv,json,xml,excel
+    buffer-size: 8192
+    skip-header-lines: 1
+  
+  writer:
+    default-format: csv
+    compress-output: true
+    include-headers: true
+
+# Monitoring and metrics
+monitoring:
+  metrics-enabled: true
+  job-execution-threshold-ms: 300000 # 5 minutes
+  step-execution-threshold-ms: 60000 # 1 minute
+  alert-on-failure: true
+
+# Logging configuration specific to batch
+logging:
+  level:
+    com.gradle80.batch: INFO
+    org.springframework.batch: INFO
+    
+# FIXME: Credentials should be externalized in a secure store
+# TODO: Implement proper credential management
+
+# Development mode settings (disable in production)
+dev-mode:
+  enabled: false
+  skip-validation: false
+  simulate-failures: false

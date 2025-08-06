@@ -1,0 +1,1 @@
+This is a placeholder file for the integration-tests module jar.

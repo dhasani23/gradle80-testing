@@ -1,0 +1,1007 @@
+{
+  "module": "aws-integration",
+  "description": "Integration with AWS messaging services providing SNS publishing and SQS message handling capabilities",
+  "file_count": 25,
+  "module_path": "aws-integration",
+  "interfaces": {
+    "SnsPublisher": "Interface for publishing messages to AWS SNS topics",
+    "SqsListener": "Interface for listening to AWS SQS queues",
+    "MessageProcessor": "Interface for processing received messages from queues",
+    "AwsCredentialsProvider": "Interface for obtaining AWS credentials"
+  },
+  "dependencies": {
+    "internal": ["common", "api"],
+    "external": [
+      "com.amazonaws:aws-java-sdk-sns",
+      "com.amazonaws:aws-java-sdk-sqs",
+      "org.springframework.boot:spring-boot-starter",
+      "org.springframework.cloud:spring-cloud-aws-messaging",
+      "org.projectlombok:lombok",
+      "org.testng:testng",
+      "junit:junit"
+    ]
+  },
+  "classes": [
+    {
+      "name": "AwsIntegrationConfiguration",
+      "package": "com.gradle80.aws.config",
+      "type": "configuration",
+      "description": "AWS integration configuration properties and beans",
+      "dependencies": ["AmazonSNS", "AmazonSQS", "CredentialsProvider"],
+      "fields": [
+        {
+          "name": "awsRegion",
+          "type": "String",
+          "description": "AWS Region"
+        },
+        {
+          "name": "sqsEndpointUrl",
+          "type": "String",
+          "description": "SQS Endpoint"
+        },
+        {
+          "name": "snsEndpointUrl",
+          "type": "String",
+          "description": "SNS Endpoint"
+        }
+      ],
+      "methods": [
+        {
+          "name": "amazonSNSClient",
+          "returnType": "AmazonSNS",
+          "parameters": [],
+          "description": "SNS Client"
+        },
+        {
+          "name": "amazonSQSClient",
+          "returnType": "AmazonSQS",
+          "parameters": [],
+          "description": "SQS Client"
+        },
+        {
+          "name": "awsCredentialsProvider",
+          "returnType": "AWSCredentialsProvider",
+          "parameters": [],
+          "description": "Credentials Provider"
+        }
+      ]
+    },
+    {
+      "name": "AwsCredentialsProviderImpl",
+      "package": "com.gradle80.aws.security",
+      "type": "service",
+      "description": "AWS credentials provider implementation",
+      "dependencies": ["AWSCredentialsProvider"],
+      "fields": [
+        {
+          "name": "accessKey",
+          "type": "String",
+          "description": "Access Key"
+        },
+        {
+          "name": "secretKey",
+          "type": "String",
+          "description": "Secret Key"
+        }
+      ],
+      "methods": [
+        {
+          "name": "getCredentials",
+          "returnType": "AWSCredentials",
+          "parameters": [],
+          "description": "Retrieve Credentials"
+        },
+        {
+          "name": "refresh",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Refresh Credentials"
+        }
+      ]
+    },
+    {
+      "name": "SnsPublisherImpl",
+      "package": "com.gradle80.aws.sns",
+      "type": "service",
+      "description": "SNS message publisher implementation",
+      "dependencies": ["SnsPublisher", "AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "SNS Client"
+        },
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON Mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "publishMessage",
+          "returnType": "PublishResult",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "Object"
+            }
+          ],
+          "description": "Publish Message"
+        },
+        {
+          "name": "publishMessageWithAttributes",
+          "returnType": "PublishResult",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "Object"
+            },
+            {
+              "name": "attributes",
+              "type": "Map<String, String>"
+            }
+          ],
+          "description": "Publish Attributed"
+        }
+      ]
+    },
+    {
+      "name": "SqsMessageListener",
+      "package": "com.gradle80.aws.sqs",
+      "type": "service",
+      "description": "SQS message listener implementation",
+      "dependencies": ["SqsListener", "AmazonSQS", "MessageProcessor"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS Client"
+        },
+        {
+          "name": "messageProcessors",
+          "type": "Map<String, MessageProcessor>",
+          "description": "Message Processors"
+        },
+        {
+          "name": "pollingIntervalMs",
+          "type": "long",
+          "description": "Polling Interval"
+        }
+      ],
+      "methods": [
+        {
+          "name": "startListening",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Start Listener"
+        },
+        {
+          "name": "stopListening",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Stop Listener"
+        },
+        {
+          "name": "receiveAndProcessMessages",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Process Messages"
+        }
+      ]
+    },
+    {
+      "name": "QueueManager",
+      "package": "com.gradle80.aws.sqs",
+      "type": "service",
+      "description": "Manages SQS queue operations",
+      "dependencies": ["AmazonSQS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS Client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createQueue",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "queueName",
+              "type": "String"
+            }
+          ],
+          "description": "Create Queue"
+        },
+        {
+          "name": "deleteQueue",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Delete Queue"
+        },
+        {
+          "name": "getQueueAttributes",
+          "returnType": "Map<String, String>",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Queue Attributes"
+        },
+        {
+          "name": "purgeQueue",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Purge Queue"
+        }
+      ]
+    },
+    {
+      "name": "TopicManager",
+      "package": "com.gradle80.aws.sns",
+      "type": "service",
+      "description": "Manages SNS topic operations",
+      "dependencies": ["AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "SNS Client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "createTopic",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "topicName",
+              "type": "String"
+            }
+          ],
+          "description": "Create Topic"
+        },
+        {
+          "name": "deleteTopic",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            }
+          ],
+          "description": "Delete Topic"
+        },
+        {
+          "name": "subscribeToTopic",
+          "returnType": "String",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            },
+            {
+              "name": "protocol",
+              "type": "String"
+            },
+            {
+              "name": "endpoint",
+              "type": "String"
+            }
+          ],
+          "description": "Subscribe Topic"
+        },
+        {
+          "name": "unsubscribeFromTopic",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "subscriptionArn",
+              "type": "String"
+            }
+          ],
+          "description": "Unsubscribe Topic"
+        }
+      ]
+    },
+    {
+      "name": "AwsHealthCheck",
+      "package": "com.gradle80.aws.health",
+      "type": "service",
+      "description": "Health check for AWS services",
+      "dependencies": ["AmazonSQS", "AmazonSNS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS Client"
+        },
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "SNS Client"
+        }
+      ],
+      "methods": [
+        {
+          "name": "checkSqsHealth",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Check SQS"
+        },
+        {
+          "name": "checkSnsHealth",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Check SNS"
+        },
+        {
+          "name": "getHealthStatus",
+          "returnType": "HealthStatus",
+          "parameters": [],
+          "description": "Health Status"
+        }
+      ]
+    },
+    {
+      "name": "HealthStatus",
+      "package": "com.gradle80.aws.health",
+      "type": "model",
+      "description": "AWS service health status model",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "sqsHealthy",
+          "type": "boolean",
+          "description": "SQS Health"
+        },
+        {
+          "name": "snsHealthy",
+          "type": "boolean",
+          "description": "SNS Health"
+        },
+        {
+          "name": "lastChecked",
+          "type": "LocalDateTime",
+          "description": "Last Check"
+        }
+      ],
+      "methods": [
+        {
+          "name": "isOverallHealthy",
+          "returnType": "boolean",
+          "parameters": [],
+          "description": "Overall Health"
+        }
+      ]
+    },
+    {
+      "name": "SnsMessage",
+      "package": "com.gradle80.aws.sns.model",
+      "type": "model",
+      "description": "SNS message model",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "messageId",
+          "type": "String",
+          "description": "Message ID"
+        },
+        {
+          "name": "payload",
+          "type": "String",
+          "description": "Message Payload"
+        },
+        {
+          "name": "attributes",
+          "type": "Map<String, String>",
+          "description": "Message Attributes"
+        },
+        {
+          "name": "timestamp",
+          "type": "LocalDateTime",
+          "description": "Message Timestamp"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "SqsMessage",
+      "package": "com.gradle80.aws.sqs.model",
+      "type": "model",
+      "description": "SQS message model",
+      "dependencies": [],
+      "fields": [
+        {
+          "name": "messageId",
+          "type": "String",
+          "description": "Message ID"
+        },
+        {
+          "name": "receiptHandle",
+          "type": "String",
+          "description": "Receipt Handle"
+        },
+        {
+          "name": "body",
+          "type": "String",
+          "description": "Message Body"
+        },
+        {
+          "name": "attributes",
+          "type": "Map<String, String>",
+          "description": "Message Attributes"
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "DefaultMessageProcessor",
+      "package": "com.gradle80.aws.sqs",
+      "type": "service",
+      "description": "Default implementation for processing messages",
+      "dependencies": ["MessageProcessor", "SqsMessage"],
+      "fields": [
+        {
+          "name": "objectMapper",
+          "type": "ObjectMapper",
+          "description": "JSON Mapper"
+        }
+      ],
+      "methods": [
+        {
+          "name": "processMessage",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "SqsMessage"
+            }
+          ],
+          "description": "Process Message"
+        },
+        {
+          "name": "convertMessageToType",
+          "returnType": "<T> T",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "SqsMessage"
+            },
+            {
+              "name": "targetClass",
+              "type": "Class<T>"
+            }
+          ],
+          "description": "Convert Message"
+        }
+      ]
+    },
+    {
+      "name": "RetryableMessageProcessor",
+      "package": "com.gradle80.aws.sqs",
+      "type": "service",
+      "description": "Retryable message processor with dead-letter capability",
+      "dependencies": ["MessageProcessor", "SqsMessage", "AmazonSQS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "SQS Client"
+        },
+        {
+          "name": "deadLetterQueueUrl",
+          "type": "String",
+          "description": "DLQ URL"
+        },
+        {
+          "name": "maxRetries",
+          "type": "int",
+          "description": "Max Retries"
+        }
+      ],
+      "methods": [
+        {
+          "name": "processMessage",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "SqsMessage"
+            }
+          ],
+          "description": "Process Message"
+        },
+        {
+          "name": "sendToDeadLetter",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "SqsMessage"
+            },
+            {
+              "name": "exception",
+              "type": "Exception"
+            }
+          ],
+          "description": "Send to DLQ"
+        }
+      ]
+    },
+    {
+      "name": "AwsErrorHandler",
+      "package": "com.gradle80.aws.error",
+      "type": "service",
+      "description": "Handler for AWS service errors",
+      "dependencies": ["AmazonServiceException", "AmazonClientException"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "handleSnsException",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "exception",
+              "type": "AmazonServiceException"
+            }
+          ],
+          "description": "Handle SNS"
+        },
+        {
+          "name": "handleSqsException",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "exception",
+              "type": "AmazonServiceException"
+            }
+          ],
+          "description": "Handle SQS"
+        },
+        {
+          "name": "handleClientException",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "exception",
+              "type": "AmazonClientException"
+            }
+          ],
+          "description": "Handle Client"
+        },
+        {
+          "name": "isRetryable",
+          "returnType": "boolean",
+          "parameters": [
+            {
+              "name": "exception",
+              "type": "Exception"
+            }
+          ],
+          "description": "Check Retryable"
+        }
+      ]
+    },
+    {
+      "name": "SnsPublisherTest",
+      "package": "com.gradle80.aws.sns",
+      "type": "test",
+      "description": "Tests for SNS publisher",
+      "dependencies": ["SnsPublisherImpl", "AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "Mock SNS"
+        },
+        {
+          "name": "snsPublisher",
+          "type": "SnsPublisherImpl",
+          "description": "Publisher Under Test"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Setup"
+        },
+        {
+          "name": "testPublishMessage",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Publish"
+        },
+        {
+          "name": "testPublishMessageWithAttributes",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Attributes"
+        }
+      ]
+    },
+    {
+      "name": "SqsMessageListenerTest",
+      "package": "com.gradle80.aws.sqs",
+      "type": "test",
+      "description": "Tests for SQS message listener",
+      "dependencies": ["SqsMessageListener", "AmazonSQS", "MessageProcessor"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "Mock SQS"
+        },
+        {
+          "name": "messageProcessor",
+          "type": "MessageProcessor",
+          "description": "Mock Processor"
+        },
+        {
+          "name": "messageListener",
+          "type": "SqsMessageListener",
+          "description": "Listener Under Test"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Setup"
+        },
+        {
+          "name": "testReceiveAndProcessMessages",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Process"
+        },
+        {
+          "name": "testStartAndStopListening",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Lifecycle"
+        }
+      ]
+    },
+    {
+      "name": "QueueManagerTest",
+      "package": "com.gradle80.aws.sqs",
+      "type": "test",
+      "description": "Tests for queue manager",
+      "dependencies": ["QueueManager", "AmazonSQS"],
+      "fields": [
+        {
+          "name": "sqsClient",
+          "type": "AmazonSQS",
+          "description": "Mock SQS"
+        },
+        {
+          "name": "queueManager",
+          "type": "QueueManager",
+          "description": "Manager Under Test"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Setup"
+        },
+        {
+          "name": "testCreateQueue",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Create"
+        },
+        {
+          "name": "testDeleteQueue",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Delete"
+        },
+        {
+          "name": "testGetQueueAttributes",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Attributes"
+        }
+      ]
+    },
+    {
+      "name": "TopicManagerTest",
+      "package": "com.gradle80.aws.sns",
+      "type": "test",
+      "description": "Tests for topic manager",
+      "dependencies": ["TopicManager", "AmazonSNS"],
+      "fields": [
+        {
+          "name": "snsClient",
+          "type": "AmazonSNS",
+          "description": "Mock SNS"
+        },
+        {
+          "name": "topicManager",
+          "type": "TopicManager",
+          "description": "Manager Under Test"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Setup"
+        },
+        {
+          "name": "testCreateTopic",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Create"
+        },
+        {
+          "name": "testDeleteTopic",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Delete"
+        },
+        {
+          "name": "testSubscribeToTopic",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Subscribe"
+        }
+      ]
+    },
+    {
+      "name": "AwsIntegrationIT",
+      "package": "com.gradle80.aws.integration",
+      "type": "test",
+      "description": "Integration tests for AWS services",
+      "dependencies": ["SnsPublisher", "SqsListener", "QueueManager", "TopicManager"],
+      "fields": [
+        {
+          "name": "snsPublisher",
+          "type": "SnsPublisher",
+          "description": "SNS Publisher"
+        },
+        {
+          "name": "sqsListener",
+          "type": "SqsListener",
+          "description": "SQS Listener"
+        },
+        {
+          "name": "queueManager",
+          "type": "QueueManager",
+          "description": "Queue Manager"
+        },
+        {
+          "name": "topicManager",
+          "type": "TopicManager",
+          "description": "Topic Manager"
+        }
+      ],
+      "methods": [
+        {
+          "name": "setUp",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Setup"
+        },
+        {
+          "name": "testEnd2EndMessagePublishingAndReceiving",
+          "returnType": "void",
+          "parameters": [],
+          "description": "End-to-End Test"
+        },
+        {
+          "name": "tearDown",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Test Cleanup"
+        }
+      ]
+    },
+    {
+      "name": "SnsPublisher",
+      "package": "com.gradle80.aws.sns",
+      "type": "interface",
+      "description": "Interface for SNS publishing operations",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "publishMessage",
+          "returnType": "PublishResult",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "Object"
+            }
+          ],
+          "description": "Publish Message"
+        },
+        {
+          "name": "publishMessageWithAttributes",
+          "returnType": "PublishResult",
+          "parameters": [
+            {
+              "name": "topicArn",
+              "type": "String"
+            },
+            {
+              "name": "message",
+              "type": "Object"
+            },
+            {
+              "name": "attributes",
+              "type": "Map<String, String>"
+            }
+          ],
+          "description": "Publish Attributed"
+        }
+      ]
+    },
+    {
+      "name": "SqsListener",
+      "package": "com.gradle80.aws.sqs",
+      "type": "interface",
+      "description": "Interface for SQS listening operations",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "startListening",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Start Listener"
+        },
+        {
+          "name": "stopListening",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "queueUrl",
+              "type": "String"
+            }
+          ],
+          "description": "Stop Listener"
+        }
+      ]
+    },
+    {
+      "name": "MessageProcessor",
+      "package": "com.gradle80.aws.sqs",
+      "type": "interface",
+      "description": "Interface for processing SQS messages",
+      "dependencies": ["SqsMessage"],
+      "fields": [],
+      "methods": [
+        {
+          "name": "processMessage",
+          "returnType": "void",
+          "parameters": [
+            {
+              "name": "message",
+              "type": "SqsMessage"
+            }
+          ],
+          "description": "Process Message"
+        }
+      ]
+    },
+    {
+      "name": "AwsCredentialsProvider",
+      "package": "com.gradle80.aws.security",
+      "type": "interface",
+      "description": "Interface for providing AWS credentials",
+      "dependencies": [],
+      "fields": [],
+      "methods": [
+        {
+          "name": "getCredentials",
+          "returnType": "AWSCredentials",
+          "parameters": [],
+          "description": "Retrieve Credentials"
+        },
+        {
+          "name": "refresh",
+          "returnType": "void",
+          "parameters": [],
+          "description": "Refresh Credentials"
+        }
+      ]
+    }
+  ],
+  "configFiles": [
+    {
+      "path": "aws-integration/build.gradle",
+      "description": "Build file for the aws-integration module"
+    },
+    {
+      "path": "aws-integration/src/main/resources/application-aws.yml",
+      "description": "AWS configuration properties"
+    },
+    {
+      "path": "aws-integration/src/test/resources/application-aws-test.yml",
+      "description": "AWS test configuration properties"
+    },
+    {
+      "path": "aws-integration/src/main/resources/logback-aws.xml",
+      "description": "Logging configuration for AWS components"
+    }
+  ],
+  "generationOrder": [
+    "AwsCredentialsProvider",
+    "SnsPublisher",
+    "SqsListener",
+    "MessageProcessor",
+    "SnsMessage",
+    "SqsMessage",
+    "HealthStatus",
+    "AwsCredentialsProviderImpl",
+    "AwsIntegrationConfiguration",
+    "SnsPublisherImpl",
+    "SqsMessageListener",
+    "QueueManager",
+    "TopicManager",
+    "AwsHealthCheck",
+    "DefaultMessageProcessor",
+    "RetryableMessageProcessor",
+    "AwsErrorHandler",
+    "SnsPublisherTest",
+    "SqsMessageListenerTest",
+    "QueueManagerTest",
+    "TopicManagerTest",
+    "AwsIntegrationIT"
+  ]
+}
