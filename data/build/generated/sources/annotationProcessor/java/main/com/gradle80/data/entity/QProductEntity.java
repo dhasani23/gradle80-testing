@@ -5,14 +5,14 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 
 
 /**
  * QProductEntity is a Querydsl query type for ProductEntity
  */
-@Generated("com.querydsl.codegen.EntitySerializer")
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QProductEntity extends EntityPathBase<ProductEntity> {
 
     private static final long serialVersionUID = 1596503657L;

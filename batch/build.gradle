@@ -14,8 +14,8 @@ plugins {
 
 description = 'Batch processing capabilities using Spring Batch for scheduled data processing and transformation'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 repositories {
     mavenCentral()
@@ -98,6 +98,9 @@ bootJar {
     enabled = true
     archiveClassifier.set('boot')
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    // Specify the main class for the executable JAR
+    mainClass = 'com.gradle80.batch.BatchApplication'
 }
 
 jar {
@@ -116,8 +119,6 @@ jar {
         )
     }
 }
-
-// FIXME: Verify Spring Batch version compatibility with Spring Boot version
 
 /*
  * This module contains the following components:
