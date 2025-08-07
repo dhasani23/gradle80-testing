@@ -45,8 +45,8 @@ dependencies {
     implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
     implementation "com.amazonaws:aws-java-sdk-sqs:${awsSdkVersion}"
     
-    // JPA and persistence dependencies
-    implementation 'javax.persistence:javax.persistence-api:2.2'
+    // JPA and persistence dependencies - updated to Jakarta for Java 17
+    implementation 'jakarta.persistence:jakarta.persistence-api:3.0.0'
     
     // Lombok for reducing boilerplate code
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -121,8 +121,8 @@ bootJar {
 
 // Configure source and target compatibility explicitly for this module
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 // FIXME: Add proper CORS configuration for production environments

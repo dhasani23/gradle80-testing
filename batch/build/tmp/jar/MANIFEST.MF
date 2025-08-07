@@ -2,6 +2,6 @@ Manifest-Version: 1.0
 Implementation-Title: batch
 Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: davhasan
-Built-Date: Wed Aug 06 13:17:43 PDT 2025
-Built-JDK: 1.8.0_462
+Built-Date: Thu Aug 07 13:55:13 PDT 2025
+Built-JDK: 17.0.16
 
