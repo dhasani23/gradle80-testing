@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
 Implementation-Title: Web Module
-Implementation-Version: 0.1.0-SNAPSHOT
+Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: davhasan
-Build-Timestamp: 2025-08-06T14:18:50.359-0700
+Build-Timestamp: 2025-08-07T15:18:27.597-0700
 Created-By: Gradle 8.13
-Main-Class: org.springframework.boot.loader.JarLauncher
+Main-Class: org.springframework.boot.loader.launch.JarLauncher
 Start-Class: com.gradle80.web.WebApplication
-Spring-Boot-Version: 3.1.5
+Spring-Boot-Version: 3.3.12
 Spring-Boot-Classes: BOOT-INF/classes/
 Spring-Boot-Lib: BOOT-INF/lib/
 Spring-Boot-Classpath-Index: BOOT-INF/classpath.idx

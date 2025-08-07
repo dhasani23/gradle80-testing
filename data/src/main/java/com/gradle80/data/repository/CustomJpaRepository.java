@@ -32,7 +32,7 @@ public interface CustomJpaRepository<T, ID> extends JpaRepository<T, ID> {
      * 
      * @param id the ID of the entity to soft delete
      * @throws IllegalArgumentException if the ID is null
-     * @throws javax.persistence.EntityNotFoundException if no entity with the given ID exists
+     * @throws jakarta.persistence.EntityNotFoundException if no entity with the given ID exists
      */
     void softDelete(Long id);
     

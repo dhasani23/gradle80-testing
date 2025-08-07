@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.dsl.PathInits;
 /**
  * QOrderItemEntity is a Querydsl query type for OrderItemEntity
  */
-@Generated("com.querydsl.codegen.EntitySerializer")
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QOrderItemEntity extends EntityPathBase<OrderItemEntity> {
 
     private static final long serialVersionUID = -1892154949L;
@@ -30,11 +30,11 @@ public class QOrderItemEntity extends EntityPathBase<OrderItemEntity> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final QOrderEntity order;
+    protected QOrderEntity order;
 
     public final NumberPath<java.math.BigDecimal> priceAtOrder = createNumber("priceAtOrder", java.math.BigDecimal.class);
 
-    public final QProductEntity product;
+    protected QProductEntity product;
 
     public final NumberPath<Integer> quantity = createNumber("quantity", Integer.class);
 
@@ -61,6 +61,20 @@ public class QOrderItemEntity extends EntityPathBase<OrderItemEntity> {
         super(type, metadata, inits);
         this.order = inits.isInitialized("order") ? new QOrderEntity(forProperty("order"), inits.get("order")) : null;
         this.product = inits.isInitialized("product") ? new QProductEntity(forProperty("product")) : null;
+    }
+
+    public QOrderEntity order() {
+        if (order == null) {
+            order = new QOrderEntity(forProperty("order"));
+        }
+        return order;
+    }
+
+    public QProductEntity product() {
+        if (product == null) {
+            product = new QProductEntity(forProperty("product"));
+        }
+        return product;
     }
 
 }

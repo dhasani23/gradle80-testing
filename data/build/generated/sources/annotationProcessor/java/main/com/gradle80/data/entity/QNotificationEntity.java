@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.dsl.PathInits;
 /**
  * QNotificationEntity is a Querydsl query type for NotificationEntity
  */
-@Generated("com.querydsl.codegen.EntitySerializer")
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QNotificationEntity extends EntityPathBase<NotificationEntity> {
 
     private static final long serialVersionUID = 679726679L;
@@ -39,7 +39,7 @@ public class QNotificationEntity extends EntityPathBase<NotificationEntity> {
     //inherited
     public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
-    public final QUserEntity user;
+    protected QUserEntity user;
 
     public QNotificationEntity(String variable) {
         this(NotificationEntity.class, forVariable(variable), INITS);
@@ -60,6 +60,13 @@ public class QNotificationEntity extends EntityPathBase<NotificationEntity> {
     public QNotificationEntity(Class<? extends NotificationEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.user = inits.isInitialized("user") ? new QUserEntity(forProperty("user")) : null;
+    }
+
+    public QUserEntity user() {
+        if (user == null) {
+            user = new QUserEntity(forProperty("user"));
+        }
+        return user;
     }
 
 }

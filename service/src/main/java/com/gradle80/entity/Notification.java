@@ -1,84 +1,197 @@
 package com.gradle80.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.io.Serializable;
+import jakarta.persistence.*;
 
 /**
- * Entity class for notifications.
+ * Entity representing a notification in the system.
+ * 
+ * This entity maps to the notification table in the database and
+ * represents notifications sent to users.
  */
 @Entity
 @Table(name = "notifications")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class Notification implements Serializable {
+public class Notification {
 
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The notification ID.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    /**
-     * The user ID the notification is for.
-     */
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-    
-    /**
-     * The notification type.
-     */
     @Column(nullable = false)
     private String type;
     
-    /**
-     * The notification title.
-     */
     @Column(nullable = false)
-    private String title;
-    
-    /**
-     * The notification message content.
-     */
-    @Column(nullable = false, length = 1000)
     private String message;
     
-    /**
-     * Whether the notification has been read.
-     */
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+    
     @Column(nullable = false)
-    private boolean read;
+    private boolean read = false;
     
-    /**
-     * When the notification was created (timestamp).
-     */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false)
-    private Long createdAt;
-    
+    private java.util.Date createdAt;
+
     /**
-     * When the notification was read (timestamp).
+     * Default constructor
      */
-    @Column(name = "read_at")
-    private Long readAt;
-    
+    public Notification() {
+        // Required by JPA
+        this.createdAt = new java.util.Date();
+    }
+
     /**
-     * External ID (e.g., SNS message ID).
+     * Creates a new notification with the specified properties
+     *
+     * @param type the notification type
+     * @param message the notification message
+     * @param userId the ID of the user to notify
      */
-    @Column(name = "external_id")
-    private String externalId;
-    
+    public Notification(String type, String message, Long userId) {
+        this.type = type;
+        this.message = message;
+        this.userId = userId;
+        this.createdAt = new java.util.Date();
+    }
+
     /**
-     * Additional attributes stored as JSON.
+     * Gets the notification ID
+     *
+     * @return the notification ID
      */
-    @Column(columnDefinition = "TEXT")
-    private String attributesJson;
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the notification ID
+     *
+     * @param id the notification ID to set
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Gets the notification type
+     *
+     * @return the notification type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * Sets the notification type
+     *
+     * @param type the notification type to set
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * Gets the notification message
+     *
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Sets the notification message
+     *
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    /**
+     * Gets the user ID
+     *
+     * @return the user ID
+     */
+    public Long getUserId() {
+        return userId;
+    }
+
+    /**
+     * Sets the user ID
+     *
+     * @param userId the user ID to set
+     */
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * Checks if the notification has been read
+     *
+     * @return true if the notification has been read, false otherwise
+     */
+    public boolean isRead() {
+        return read;
+    }
+
+    /**
+     * Sets the read status
+     *
+     * @param read the read status to set
+     */
+    public void setRead(boolean read) {
+        this.read = read;
+    }
+
+    /**
+     * Gets the creation date
+     *
+     * @return the creation date
+     */
+    public java.util.Date getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * Sets the creation date
+     *
+     * @param createdAt the creation date to set
+     */
+    public void setCreatedAt(java.util.Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * Marks the notification as read
+     */
+    public void markAsRead() {
+        this.read = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Notification)) return false;
+
+        Notification that = (Notification) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "id=" + id +
+                ", type='" + type + '\'' +
+                ", userId=" + userId +
+                ", read=" + read +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

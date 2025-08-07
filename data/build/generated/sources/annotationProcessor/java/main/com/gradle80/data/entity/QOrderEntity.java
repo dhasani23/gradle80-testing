@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -13,7 +13,7 @@ import com.querydsl.core.types.dsl.PathInits;
 /**
  * QOrderEntity is a Querydsl query type for OrderEntity
  */
-@Generated("com.querydsl.codegen.EntitySerializer")
+@Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QOrderEntity extends EntityPathBase<OrderEntity> {
 
     private static final long serialVersionUID = 706850632L;
@@ -39,7 +39,7 @@ public class QOrderEntity extends EntityPathBase<OrderEntity> {
     //inherited
     public final DateTimePath<java.util.Date> updatedAt = _super.updatedAt;
 
-    public final QUserEntity user;
+    protected QUserEntity user;
 
     public QOrderEntity(String variable) {
         this(OrderEntity.class, forVariable(variable), INITS);
@@ -60,6 +60,13 @@ public class QOrderEntity extends EntityPathBase<OrderEntity> {
     public QOrderEntity(Class<? extends OrderEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.user = inits.isInitialized("user") ? new QUserEntity(forProperty("user")) : null;
+    }
+
+    public QUserEntity user() {
+        if (user == null) {
+            user = new QUserEntity(forProperty("user"));
+        }
+        return user;
     }
 
 }

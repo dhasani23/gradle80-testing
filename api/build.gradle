@@ -16,7 +16,7 @@ description = 'API definitions defining service contracts with models, request/r
 
 ext {
     awsSdkVersion = '1.12.150'
-    aspectjVersion = '1.9.7'
+    aspectjVersion = '1.9.20.1'
 }
 
 dependencies {
@@ -43,8 +43,8 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     
-    // Validation API
-    implementation 'javax.validation:validation-api'
+    // Jakarta EE Validation API
+    implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
     
     // AWS dependencies for notification services
     implementation "com.amazonaws:aws-java-sdk-sns:${awsSdkVersion}"
@@ -99,6 +99,12 @@ task javadocJar(type: Jar) {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+}
+
+// Configure source and target compatibility for Java 17
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 // Configure the test task
