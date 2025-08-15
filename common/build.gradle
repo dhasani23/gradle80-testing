@@ -14,8 +14,8 @@ plugins {
 
 description = 'Common utilities, shared models, and core components used across all modules'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 17
+targetCompatibility = 17
 
 repositories {
     mavenCentral()

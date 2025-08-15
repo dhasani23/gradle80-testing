@@ -1,21 +1,143 @@
-Starting a Gradle Daemon (subsequent builds will be faster)
+Configuration on demand is an incubating feature.
+> Task :clean
+> Task :compileJava NO-SOURCE
+> Task :processResources NO-SOURCE
+> Task :classes UP-TO-DATE
+> Task :service:clean
+> Task :integration-tests:clean
+> Task :batch:clean
+> Task :web:clean
+> Task :service:processResources
+> Task :integration-tests:processResources
+> Task :jar
+> Task :assemble
+> Task :service:createDummyFile
+> Task :service:processTestResources NO-SOURCE
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :test SKIPPED
+> Task :check UP-TO-DATE
+> Task :build
+> Task :integration-tests:createDummyFile
+> Task :integration-tests:processTestResources NO-SOURCE
+> Task :batch:processResources
+> Task :web:processResources
+> Task :batch:createDummyFile
+> Task :web:createDummyFile
+> Task :web:processTestResources NO-SOURCE
+> Task :batch:processTestResources
+> Task :data:clean
+> Task :common:clean
+> Task :aws-integration:clean
+> Task :data:processResources
+> Task :data:processTestResources NO-SOURCE
 
-FAILURE: Build failed with an exception.
+> Task :data:validateEntities
+Validating entity classes...
+Entity validation complete.
 
-* What went wrong:
-Unable to start the daemon process.
-This problem might be caused by incorrect configuration of the daemon.
-For example, an unrecognized jvm option is used.For more details on the daemon, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html in the Gradle documentation.
-Process command line: /Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin/java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Xmx2048m -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp /opt/homebrew/Cellar/gradle/8.13/libexec/lib/gradle-daemon-main-8.13.jar -javaagent:/opt/homebrew/Cellar/gradle/8.13/libexec/lib/agents/gradle-instrumentation-agent-8.13.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 8.13
-Please read the following process output to find out more:
------------------------
-Unrecognized VM option 'MaxPermSize=512m'
-Error: Could not create the Java Virtual Machine.
-Error: A fatal exception has occurred. Program will exit.
+> Task :api:clean
+> Task :aws-integration:processResources
+> Task :api:processResources
+> Task :api:processTestResources NO-SOURCE
+> Task :aws-integration:processTestResources
+> Task :common:compileJava FROM-CACHE
+> Task :common:processResources
+> Task :common:classes
+> Task :data:compileJava FROM-CACHE
+> Task :data:classes
+> Task :common:jar
+> Task :data:jar
+> Task :data:resolveMainClassName
+> Task :data:bootJar SKIPPED
+> Task :data:assemble
+> Task :data:compileTestJava SKIPPED
+> Task :data:testClasses UP-TO-DATE
+> Task :data:test SKIPPED
+> Task :data:check UP-TO-DATE
+> Task :data:build
+> Task :api:compileJava FROM-CACHE
+> Task :api:classes
+> Task :service:compileJava SKIPPED
+> Task :service:classes
+> Task :common:resolveMainClassName
+> Task :common:bootJar SKIPPED
+> Task :common:assemble
+> Task :common:compileTestJava SKIPPED
+> Task :common:processTestResources NO-SOURCE
+> Task :common:testClasses UP-TO-DATE
+> Task :common:test SKIPPED
+> Task :common:check UP-TO-DATE
+> Task :common:build
+> Task :service:jar
+> Task :web:compileJava SKIPPED
+> Task :web:classes
+> Task :service:resolveMainClassName
+> Task :service:compileTestJava SKIPPED
+> Task :service:testClasses UP-TO-DATE
+> Task :web:jar
+> Task :web:compileTestJava SKIPPED
+> Task :web:testClasses UP-TO-DATE
+> Task :api:resolveMainClassName
+> Task :api:bootJar SKIPPED
+> Task :aws-integration:compileJava FROM-CACHE
+> Task :aws-integration:classes
+> Task :batch:compileJava SKIPPED
+> Task :batch:classes
+> Task :integration-tests:compileJava SKIPPED
+> Task :integration-tests:classes
+> Task :integration-tests:resolveMainClassName
+> Task :batch:jar
+> Task :batch:compileTestJava SKIPPED
+> Task :batch:testClasses
+> Task :integration-tests:jar
+> Task :integration-tests:compileTestJava SKIPPED
+> Task :integration-tests:testClasses UP-TO-DATE
+> Task :api:jar
+> Task :api:assemble
+> Task :service:bootJar SKIPPED
+> Task :service:assemble
+> Task :aws-integration:resolveMainClassName
+> Task :api:compileTestJava SKIPPED
+> Task :service:test SKIPPED
+> Task :api:testClasses UP-TO-DATE
+> Task :aws-integration:bootJar SKIPPED
+> Task :service:check UP-TO-DATE
+> Task :service:build
+> Task :api:test SKIPPED
+> Task :api:check UP-TO-DATE
+> Task :api:build
+> Task :aws-integration:jar
+> Task :aws-integration:assemble
+> Task :integration-tests:bootJar SKIPPED
+> Task :integration-tests:assemble
+> Task :aws-integration:compileTestJava SKIPPED
+> Task :aws-integration:testClasses
+> Task :integration-tests:test SKIPPED
+> Task :integration-tests:check UP-TO-DATE
+> Task :integration-tests:build
+> Task :aws-integration:test SKIPPED
+> Task :aws-integration:check UP-TO-DATE
+> Task :aws-integration:build
+> Task :web:bootJar
+> Task :web:assemble
+> Task :web:test SKIPPED
+> Task :web:check UP-TO-DATE
+> Task :web:build
+> Task :batch:bootJar
+> Task :batch:assemble
+> Task :batch:test SKIPPED
+> Task :batch:check UP-TO-DATE
+> Task :batch:build
 
+[Incubating] Problems report is available at: file:///Users/davhasan/Downloads/gradle80-testing/build/reports/problems/problems-report.html
 
-* Try:
-> Run with --stacktrace option to get the stack trace.
-> Run with --info or --debug option to get more log output.
-> Run with --scan to get full insights.
-> Get more help at https://help.gradle.org.
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.13/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 4s
+45 actionable tasks: 41 executed, 4 from cache

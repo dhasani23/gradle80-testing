@@ -32,8 +32,8 @@ public interface UserRepositoryCustom {
      *
      * @param userId The ID of the user to update
      * @param loginDate The date and time of the login event
-     * @throws javax.persistence.EntityNotFoundException if the user cannot be found
-     * @throws javax.persistence.PersistenceException if there's a database error
+     * @throws jakarta.persistence.EntityNotFoundException if the user cannot be found
+     * @throws jakarta.persistence.PersistenceException if there's a database error
      */
     void updateLastLoginDate(Long userId, Date loginDate);
 }

@@ -2,13 +2,13 @@ package com.gradle80.data.repository.custom;
 
 import com.gradle80.data.entity.UserEntity;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,8 +68,8 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
      *
      * @param userId The ID of the user to update
      * @param loginDate The date and time of the login event
-     * @throws javax.persistence.EntityNotFoundException if the user cannot be found
-     * @throws javax.persistence.PersistenceException if there's a database error
+     * @throws jakarta.persistence.EntityNotFoundException if the user cannot be found
+     * @throws jakarta.persistence.PersistenceException if there's a database error
      */
     @Override
     public void updateLastLoginDate(Long userId, Date loginDate) {
@@ -91,7 +91,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
                 .executeUpdate();
                 
         if (updatedRows == 0) {
-            throw new javax.persistence.EntityNotFoundException("User with ID " + userId + " not found");
+            throw new jakarta.persistence.EntityNotFoundException("User with ID " + userId + " not found");
         }
     }
 }

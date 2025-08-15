@@ -2,8 +2,8 @@ package com.gradle80.api.request;
 
 import com.gradle80.api.model.ApiRequest;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.Objects;
 
 /**
